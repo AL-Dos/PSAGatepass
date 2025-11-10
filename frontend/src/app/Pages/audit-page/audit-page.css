@@ -1,0 +1,35 @@
+.audit-page-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 2rem;
+  padding: 2rem;
+}
+
+.left-panel, .right-panel {
+  flex: 1;
+}
+
+.left-panel {
+  max-width: 40%;
+}
+
+.right-panel {
+  max-width: 60%;
+}
+
+@media (max-width: 768px) {
+  .audit-page-container {
+    flex-direction: column;
+  }
+  .left-panel, .right-panel {
+    max-width: 100%;
+  }
+}
+
+.separator {
+  width: 2px;
+  height: 450px;
+  background-color: #000000;
+  justify-content: center;
+}

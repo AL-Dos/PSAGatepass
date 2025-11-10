@@ -1,0 +1,8 @@
+.footer {
+  color: rgba(0, 0, 0, 0.658);
+  padding: 10px 20px 20px;
+  font-size: 0.8rem;
+  bottom: 0;
+  position: fixed;
+  text-align: left;
+}

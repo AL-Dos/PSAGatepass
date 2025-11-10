@@ -1,0 +1,25 @@
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: fixed;
+  width: 100%;
+  padding: 0 2%;
+  background-color: rgb(110, 109, 109);
+  height: 10vh;
+  min-height: 60px;
+  box-shadow: 0 2px 5px rgb(0, 0, 0);
+  box-sizing: border-box;
+  z-index: 1000;
+}
+
+.title {
+  color: rgb(0, 0, 0);
+  font-size: clamp(1.2rem, 2.5vw, 2rem);
+  font-family: Impact, sans-serif;
+  letter-spacing: 0.12em;
+}
+
+.logo {
+  width: clamp(40px, 4vw, 70px);
+}

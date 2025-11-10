@@ -1,5 +1,7 @@
 package com.gatepass.back.Model;
 
+import java.time.LocalDate;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -23,5 +25,5 @@ public class Requestors {
     @Column(name = "destinaton", nullable = false)
     private String destinaton;
     @Column(name = "period", nullable = false)
-    private String period;
+    private LocalDate period;
 }

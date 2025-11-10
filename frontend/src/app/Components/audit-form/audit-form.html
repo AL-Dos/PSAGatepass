@@ -1,1 +1,82 @@
-<p>audit-form works!</p>
+<div>
+  <mat-card>
+    <mat-card-header>
+      <h2>Requesitor Form</h2>
+    </mat-card-header>
+
+    <mat-card-content class="scrollable-content">
+      <form #requisitorForm="ngForm">
+        <!-- Current Owner -->
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Name of Requesitor</mat-label>
+          <input
+            matInput
+            name="requesitor"
+            placeholder="Name of Requesitor"
+            required
+          />
+          <!-- [(ngModel)]="form.docOwner" -->
+        </mat-form-field>
+
+        <!-- Description -->
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Description of Property/Equipment</mat-label>
+          <input
+            matInput
+            name="description"
+            placeholder="Description of Property/Equipment"
+            required
+          />
+          <!-- [(ngModel)]="form.docType" -->
+        </mat-form-field>
+
+        <!-- Number of Properties -->
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>No. of Properties Requested</mat-label>
+          <input
+            matInput
+            type="number"
+            name="numberProperty"
+            required
+          />
+          <!--[(ngModel)]="form.copies" -->
+        </mat-form-field>
+
+        <!-- Destination -->
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Destination</mat-label>
+          <input
+            matInput
+            name="destination"
+            placeholder="Destination"
+            required
+          />
+          <!-- [(ngModel)]="form.amountPaid" -->
+        </mat-form-field>
+
+        <!-- Dates requested -->
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Period Covered</mat-label>
+          <input
+            matInput
+            name="period"
+            placeholder="Period Covered"
+          />
+          <!-- [(ngModel)]="form.docOwnerId" -->
+        </mat-form-field>
+
+        <!-- Buttons -->
+        <div class="button-group">
+          <!-- (click)="onSave()" -->
+          <button mat-raised-button color="primary" type="submit">
+            Save
+          </button>
+          <!-- (click)="onClear()" -->
+          <button mat-stroked-button color="accent" type="reset">
+            Clear
+          </button>
+        </div>
+      </form>
+    </mat-card-content>
+  </mat-card>
+</div>
