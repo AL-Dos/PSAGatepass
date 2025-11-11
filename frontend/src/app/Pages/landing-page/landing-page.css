@@ -1,7 +1,7 @@
 .audit-page-container {
   display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
+  justify-content: center;
+  align-items: center;
   gap: 2rem;
   padding: 2rem;
 }
@@ -16,15 +16,6 @@
 
 .right-panel {
   max-width: 60%;
-}
-
-@media (max-width: 768px) {
-  .audit-page-container {
-    flex-direction: column;
-  }
-  .left-panel, .right-panel {
-    max-width: 100%;
-  }
 }
 
 .separator {
