@@ -1,35 +1,109 @@
-.audit-page-container {
+body {
+  height: 100%;
+  min-height: 100vh;
+  box-sizing: border-box;
+  padding-bottom: 100px;
+}
+
+p {
+  text-align: center;
+  font-size: clamp(1.1rem, 2vw, 2.1rem);
+  font-weight: bold;
+  font-family:Impact;
+  color: black;
+  letter-spacing: 2.5px;
+  word-spacing: 5px;
+  margin-top: calc(7vh + 7vh);
+}
+
+.mat-column-id, .mat-column-date, .mat-column-equip, .mat-column-pNum, .mat-column-dest,
+.mat-column-pCover, .mat-column-pCust, .mat-column-oic, .mat-column-guard {
+  width: 35px;
+  border-right: 1px solid rgba(201, 198, 198, 0.774);
+  padding-right: 24px;
+  text-align: center;
+  font-size: 11px;
+}
+
+.mat-column-actions {
+  width: 35px;
+  padding-right: 24px;
+  text-align: center;
+  font-size: 11px;
+}
+
+.table-container {
+  background-color: #ffffff;
+  padding: 20px;
+  margin: 20px;
+  border-radius: 20px;
+  box-shadow: 0 4px 8px #0000004f;
   display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: 2rem;
-  padding: 2rem;
+  flex-direction: column;
 }
 
-.left-panel, .right-panel {
-  flex: 1;
+.table-container table{
+  padding-left: 10px;
+  padding-right: 10px;
+  width: 100%;
+  border: 5px solid rgba(201, 198, 198, 0.774);
+  border-radius: 10px;
+  border-collapse: collapse;
+  border-spacing: 0;
+  word-wrap: break-word;
+  border-radius: 20px;
 }
 
-.left-panel {
-  max-width: 40%;
+.search-bar {
+  margin-bottom: 5px;
+  justify-content: flex-start;
+  align-self: flex-start;
+  min-width: max-content;
+  position: relative;
+  left: 0;
+  z-index: 2;
 }
 
-.right-panel {
-  max-width: 60%;
+mat-paginator {
+  margin-right: -10px;
+  margin-top: 10px;
+  background-color: #ffffff;
+  align-self: flex-end;
+  min-width: max-content;
+  right: 4;
 }
 
-@media (max-width: 768px) {
-  .audit-page-container {
-    flex-direction: column;
-  }
-  .left-panel, .right-panel {
-    max-width: 100%;
-  }
-}
-
-.separator {
-  width: 2px;
-  height: 450px;
-  background-color: #000000;
+.buttons {
+  display: flex;
   justify-content: center;
+  gap: 5px;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table-scroll {
+  overflow-x: auto;
+  scrollbar-width: thin;
+  max-width: 100%;
+}
+
+.table-scroll::-webkit-scrollbar {
+  height: 8px;
+  width: 10px;
+}
+
+.table-scroll::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 10px;
+}
+
+.table-scroll::-webkit-scrollbar-thumb {
+  background: #888;
+}
+
+.table-scroll::-webkit-scrollbar-thumb:hover {
+  background: #555;
 }
