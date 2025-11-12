@@ -6,21 +6,8 @@
   padding: 2rem;
 }
 
-.left-panel, .right-panel {
-  flex: 1;
-}
-
-.left-panel {
-  max-width: 40%;
-}
-
-.right-panel {
-  max-width: 60%;
-}
-
 .separator {
   width: 2px;
-  height: 450px;
+  height: 650px;
   background-color: #000000;
-  justify-content: center;
 }

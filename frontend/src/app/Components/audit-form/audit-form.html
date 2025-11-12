@@ -1,4 +1,4 @@
-<div>
+<div class="request-form">
   <mat-card>
     <mat-card-header>
       <h2>Requesitor Form</h2>
@@ -7,7 +7,7 @@
     <mat-card-content class="scrollable-content">
       <form #requisitorForm="ngForm">
         <!-- Current Owner -->
-        <mat-form-field appearance="outline" class="full-width">
+        <mat-form-field>
           <mat-label>Name of Requesitor</mat-label>
           <input
             matInput
@@ -15,11 +15,11 @@
             placeholder="Name of Requesitor"
             required
           />
-          <!-- [(ngModel)]="form.docOwner" -->
+          <mat-icon matSuffix>person</mat-icon>
         </mat-form-field>
 
         <!-- Description -->
-        <mat-form-field appearance="outline" class="full-width">
+        <mat-form-field>
           <mat-label>Description of Property/Equipment</mat-label>
           <input
             matInput
@@ -27,11 +27,11 @@
             placeholder="Description of Property/Equipment"
             required
           />
-          <!-- [(ngModel)]="form.docType" -->
+          <mat-icon matSuffix>laptop</mat-icon>
         </mat-form-field>
 
         <!-- Number of Properties -->
-        <mat-form-field appearance="outline" class="full-width">
+        <mat-form-field>
           <mat-label>No. of Properties Requested</mat-label>
           <input
             matInput
@@ -39,11 +39,11 @@
             name="numberProperty"
             required
           />
-          <!--[(ngModel)]="form.copies" -->
+          <mat-icon matSuffix>list_alt</mat-icon>
         </mat-form-field>
 
         <!-- Destination -->
-        <mat-form-field appearance="outline" class="full-width">
+        <mat-form-field>
           <mat-label>Destination</mat-label>
           <input
             matInput
@@ -51,30 +51,24 @@
             placeholder="Destination"
             required
           />
-          <!-- [(ngModel)]="form.amountPaid" -->
+          <mat-icon matSuffix>location_on</mat-icon>
         </mat-form-field>
 
         <!-- Dates requested -->
-        <mat-form-field appearance="outline" class="full-width">
+        <mat-form-field>
           <mat-label>Period Covered</mat-label>
           <input
             matInput
             name="period"
             placeholder="Period Covered"
           />
-          <!-- [(ngModel)]="form.docOwnerId" -->
+          <mat-icon matSuffix>calendar_today</mat-icon>
         </mat-form-field>
 
         <!-- Buttons -->
         <div class="button-group">
-          <!-- (click)="onSave()" -->
-          <button mat-raised-button color="primary" type="submit">
-            Save
-          </button>
-          <!-- (click)="onClear()" -->
-          <button mat-stroked-button color="accent" type="reset">
-            Clear
-          </button>
+          <button mat-raised-button color="primary" type="submit"> Save </button>
+          <button mat-stroked-button color="accent" type="reset" class="clear"> Clear </button>
         </div>
       </form>
     </mat-card-content>
