@@ -9,6 +9,8 @@ import com.gatepass.backend.Data.RequestorDTO;
 import com.gatepass.backend.Model.Equipments;
 import com.gatepass.backend.Model.Requestors;
 import com.gatepass.backend.Repository.RequestorRepository;
+import com.gatepass.backend.Util.RequestorMapper;
+
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,9 +23,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 @RequestMapping("/api")
 public class GatepassController {
     private final RequestorRepository requestorRepo;
+    private final RequestorMapper requestorMapper;
 
-    public GatepassController(RequestorRepository requestorRepo) {
+    public GatepassController(RequestorRepository requestorRepo, RequestorMapper requestorMapper) {
         this.requestorRepo = requestorRepo;
+        this.requestorMapper = requestorMapper;
     }
 
     @PostMapping("/submit")
@@ -55,17 +59,18 @@ public class GatepassController {
 
     @GetMapping("/list")
     public ResponseEntity<?> getAllRequestor() {
-        return ResponseEntity.ok(requestorRepo.findAll());
+        var list = requestorRepo.findAll();
+        return ResponseEntity.ok(requestorMapper.toDtoList(list));
     }
-    
 
     @GetMapping("/listById/{id}")
     public ResponseEntity<?> getRequestorById(@PathVariable Long id) {
-        return requestorRepo.findById(id).map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
+        return requestorRepo.findById(id).map(requestorMapper::toDto).map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
     }
 
     @GetMapping("/list/search")
     public ResponseEntity<?> searchbyName(@RequestParam("q") String query) {
-        return ResponseEntity.ok(requestorRepo.findByNameContainingIgnoreCase(query));
+        var list = requestorRepo.findByNameContainingIgnoreCase(query);
+        return ResponseEntity.ok(requestorMapper.toDtoList(list));
     }
 }
