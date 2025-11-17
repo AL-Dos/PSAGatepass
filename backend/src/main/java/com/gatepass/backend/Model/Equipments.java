@@ -5,6 +5,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
@@ -18,10 +20,14 @@ public class Equipments {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
     private Long id;
-    @Column(name = "equipment", nullable = false)
-    private String equipment;
-    @Column(name = "number", nullable = false)
-    private String number;
-    @Column(name = "count", nullable = false)
-    private int count;
+    @Column(name = "equipment_name", nullable = false)
+    private String equipmentName;
+    @Column(name = "quantity", nullable = false)
+    private int quantity;
+    @Column(name = "equipment_code", nullable = false)
+    private String equipmentCode;
+
+    @ManyToOne
+    @JoinColumn(name = "requestor_id", nullable = false)
+    private Requestors requestor;
 }
