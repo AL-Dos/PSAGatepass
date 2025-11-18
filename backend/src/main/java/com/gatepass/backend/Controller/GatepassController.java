@@ -3,11 +3,14 @@ package com.gatepass.backend.Controller;
 import java.util.stream.Collectors;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 
 import com.gatepass.backend.Data.RequestorDTO;
 import com.gatepass.backend.Model.Equipments;
 import com.gatepass.backend.Model.Requestors;
+import com.gatepass.backend.Repository.AuditorRepository;
 import com.gatepass.backend.Repository.RequestorRepository;
 import com.gatepass.backend.Util.RequestorMapper;
 
@@ -58,19 +61,61 @@ public class GatepassController {
     }
 
     @GetMapping("/list")
+    @PreAuthorize("hasAnyRole('OIC','CUSTODIAN','GUARD')")
     public ResponseEntity<?> getAllRequestor() {
         var list = requestorRepo.findAll();
         return ResponseEntity.ok(requestorMapper.toDtoList(list));
     }
 
     @GetMapping("/listById/{id}")
+    @PreAuthorize("hasAnyRole('OIC','CUSTODIAN','GUARD')")
     public ResponseEntity<?> getRequestorById(@PathVariable Long id) {
         return requestorRepo.findById(id).map(requestorMapper::toDto).map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
     }
 
     @GetMapping("/list/search")
+    @PreAuthorize("hasAnyRole('OIC','CUSTODIAN','GUARD')")
     public ResponseEntity<?> searchbyName(@RequestParam("q") String query) {
         var list = requestorRepo.findByNameContainingIgnoreCase(query);
         return ResponseEntity.ok(requestorMapper.toDtoList(list));
     }
+
+    // Approve: OIC only
+    @PostMapping("/list/{id}/approve")
+    @PreAuthorize("hasRole('OIC')")
+    public ResponseEntity<?> approve(@PathVariable Long id,  AuditorRepository auditorRepo) {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+
+        Requestors req = requestorRepo.findById(id).orElseThrow();
+        req.setApprovedBy(username);
+        requestorRepo.save(req);
+        
+        return ResponseEntity.ok(requestorMapper.toDto(req));
+    }
+
+    // Note: Custodian only
+    @PostMapping("/list/{id}/note")
+    @PreAuthorize("hasRole('CUSTODIAN')")
+    public ResponseEntity<?> note(@PathVariable Long id) {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+
+        Requestors req = requestorRepo.findById(id).orElseThrow();
+        req.setNotedBy(username);
+        requestorRepo.save(req);
+
+        return ResponseEntity.ok(requestorMapper.toDto(req));
+    }
+
+    // Return check: Guard only
+    @PostMapping("/list/{id}/return-check")
+    @PreAuthorize("hasRole('GUARD')")
+    public ResponseEntity<?> returnCheck(@PathVariable Long id) {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+
+        Requestors req = requestorRepo.findById(id).orElseThrow();
+        req.setReturnedCheck(username);
+        requestorRepo.save(req);
+
+        return ResponseEntity.ok(requestorMapper.toDto(req));
+    }   
 }

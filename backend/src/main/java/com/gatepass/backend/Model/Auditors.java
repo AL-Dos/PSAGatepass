@@ -23,5 +23,5 @@ public class Auditors {
     @Column(name = "password", nullable = false)
     private String password;
     @Column(name = "role")
-    private int role;
+    private String role;
 }

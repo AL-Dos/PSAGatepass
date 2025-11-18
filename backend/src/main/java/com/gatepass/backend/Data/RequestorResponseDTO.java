@@ -15,4 +15,8 @@ public class RequestorResponseDTO {
     private String destination;
     private String period;
     private List<EquipmentResponseDTO> equipmentItems;
+
+    private String notedBy;
+    private String approvedBy;
+    private String returnedCheck;
 }
