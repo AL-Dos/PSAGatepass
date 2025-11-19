@@ -1,5 +1,7 @@
 package com.gatepass.backend.Model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -29,5 +31,6 @@ public class Equipments {
 
     @ManyToOne
     @JoinColumn(name = "requestor_id", nullable = false)
+    @JsonBackReference
     private Requestors requestor;
 }

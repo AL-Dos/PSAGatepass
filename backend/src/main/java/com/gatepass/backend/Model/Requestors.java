@@ -2,6 +2,8 @@ package com.gatepass.backend.Model;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -30,6 +32,7 @@ public class Requestors {
     private String period;
 
     @OneToMany(mappedBy = "requestor", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
     private List<Equipments> equipment;
 
     @Column(name = "noted_by")

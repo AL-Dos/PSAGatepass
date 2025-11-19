@@ -11,7 +11,7 @@
 //     return this.auth.isAuthenticated().pipe(
 //       tap(authenticated => {
 //         if (authenticated) {
-//           this.router.navigate(['/login']);
+//           this.router.navigate(['/database']);
 //         }
 //       }),
 //       map(authenticated => !authenticated)

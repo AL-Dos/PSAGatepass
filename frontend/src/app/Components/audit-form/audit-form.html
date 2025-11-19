@@ -1,45 +1,25 @@
+<div></div>
 <div class="request-form">
   <mat-card>
     <mat-card-header>
-      <h2>Requesitor Form</h2>
+      <h2>Requestor Form</h2>
     </mat-card-header>
 
     <mat-card-content class="scrollable-content">
-      <form #requisitorForm="ngForm">
-        <!-- Current Owner -->
+      <form #form="ngForm" (ngSubmit)="submitForm(form)">
+
+        <!-- Name -->
         <mat-form-field>
-          <mat-label>Name of Requesitor</mat-label>
+          <mat-label>Name of Requestor</mat-label>
           <input
             matInput
-            name="requesitor"
-            placeholder="Name of Requesitor"
+            name="name"
+            [(ngModel)]="model.name"
             required
+            #eqCode="ngModel"
+            appAutofocusInvalid
           />
           <mat-icon matSuffix>person</mat-icon>
-        </mat-form-field>
-
-        <!-- Description -->
-        <mat-form-field>
-          <mat-label>Description of Property/Equipment</mat-label>
-          <input
-            matInput
-            name="description"
-            placeholder="Description of Property/Equipment"
-            required
-          />
-          <mat-icon matSuffix>laptop</mat-icon>
-        </mat-form-field>
-
-        <!-- Number of Properties -->
-        <mat-form-field>
-          <mat-label>No. of Properties Requested</mat-label>
-          <input
-            matInput
-            type="number"
-            name="numberProperty"
-            required
-          />
-          <mat-icon matSuffix>list_alt</mat-icon>
         </mat-form-field>
 
         <!-- Destination -->
@@ -48,29 +28,94 @@
           <input
             matInput
             name="destination"
-            placeholder="Destination"
+            [(ngModel)]="model.destination"
             required
+            #eqCode="ngModel"
+            appAutofocusInvalid
           />
           <mat-icon matSuffix>location_on</mat-icon>
         </mat-form-field>
 
-        <!-- Dates requested -->
+        <!-- Period Covered -->
         <mat-form-field>
           <mat-label>Period Covered</mat-label>
           <input
             matInput
             name="period"
-            placeholder="Period Covered"
+            [(ngModel)]="model.period"
+            required
+            #eqCode="ngModel"
+            appAutofocusInvalid
           />
           <mat-icon matSuffix>calendar_today</mat-icon>
         </mat-form-field>
 
-        <!-- Buttons -->
+        <h3 style="margin-top: 20px;">Equipment List</h3>
+
+        <!-- EQUIPMENT REPEATING ROWS -->
+        @for (item of model.equipmentItems; let i = $index; track i) {
+          <div class="equipment-row">
+            <mat-form-field>
+              <mat-label>Description</mat-label>
+              <input
+                matInput
+                name="desc{{ i }}"
+                [(ngModel)]="item.equipmentName"
+                required
+                #eqCode="ngModel"
+                appAutofocusInvalid
+              />
+            </mat-form-field>
+
+            <mat-form-field>
+              <mat-label>Quantity</mat-label>
+              <input
+                matInput
+                type="number"
+                name="qty{{ i }}"
+                [(ngModel)]="item.quantity"
+                required
+                #eqCode="ngModel"
+                appAutofocusInvalid
+              />
+            </mat-form-field>
+
+            <mat-form-field>
+              <mat-label>Equipment ID</mat-label>
+              <input
+                matInput
+                name="eqid{{ i }}"
+                [(ngModel)]="item.equipmentCode"
+                required
+                #eqCode="ngModel"
+                appAutofocusInvalid
+              />
+            </mat-form-field>
+
+            <button mat-raised-button color="warn" (click)="removeEquipment(i)">
+              <mat-icon class="iconColor">delete</mat-icon>
+            </button>
+          </div>
+        }
+
+        <!-- ADD EQUIPMENT BUTTON -->
+        <button mat-raised-button color="accent" type="button" (click)="addEquipment()">
+          Add Equipment
+        </button>
+
         <div class="button-group">
-          <button mat-raised-button color="primary" type="submit"> Save </button>
-          <button mat-stroked-button color="accent" type="reset" class="clear"> Clear </button>
+          <button mat-raised-button color="primary" type="button" (click)="submitForm(form)">Save</button>
+          <button mat-stroked-button color="accent" type="reset" (click)="resetForm(form)">Clear</button>
         </div>
+
       </form>
+
+      @if (showSuccess) {
+        <div class="success-message">
+          <mat-icon>check_circle</mat-icon>
+          Form submitted successfully!
+        </div>
+      }
     </mat-card-content>
   </mat-card>
 </div>

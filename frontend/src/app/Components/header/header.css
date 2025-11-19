@@ -5,7 +5,7 @@ header {
   position: fixed;
   width: 100%;
   padding: 0 2%;
-  background-color: rgb(12, 90, 235);
+  background-color: rgb(1, 28, 77);
   height: 10vh;
   min-height: 60px;
   box-shadow: 0 2px 5px rgb(0, 0, 0);
@@ -21,7 +21,7 @@ header {
 }
 
 .title {
-  color: rgb(0, 0, 0);
+  color: rgb(255, 255, 255);
   font-size: clamp(1.2rem, 2.5vw, 2rem);
   font-family: "Audiowide", sans-serif;
   letter-spacing: 0.12em;

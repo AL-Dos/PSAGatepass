@@ -5,6 +5,7 @@
   gap: 1rem;
   min-height: 100vh;
   font-family: "Iansui", cursive;
+  color: white;
 }
 
 .login-left {
@@ -22,9 +23,9 @@
 }
 
 mat-card{
-  width: 400px;
+  width: 500px;
   text-align: center;
-  background-color: rgba(12, 90, 235);
+  background-color: rgba(1, 28, 77);
   border-radius: 12px;
   border-color: black;
   box-shadow: 0px 4px 24px rgba(22, 22, 22, 0.815);
@@ -48,4 +49,13 @@ mat-card-header{
   gap: 5px;
   margin-top: -10px;
   margin-bottom: 15px;
+}
+
+.textPass {
+  color: white;
+  font-family: "Iansui", cursive;
+}
+
+mat-checkbox ::ng-deep .mdc-checkbox__background {
+  border-color: white;
 }

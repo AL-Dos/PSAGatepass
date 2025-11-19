@@ -32,7 +32,9 @@
                   </mat-form-field>
                   <div class="boxPasswordCheck">
                     <!-- [(ngModel)]="showPassword" -->
-                    <mat-checkbox name="showPassword">Show password</mat-checkbox>
+                    <mat-checkbox name="showPassword">
+                      <p class="textPass">Show Password</p>
+                    </mat-checkbox>
                   </div>
                   <button mat-raised-button color="primary" type="submit" [disabled]="!loginForm.form.valid">Login</button>
               </form>
