@@ -5,17 +5,13 @@
               <h2>Login Admin</h2>
           </mat-card-header>
           <mat-card-content>
-              <!-- ngSubmit)="login()" -->
-              <form #loginForm="ngForm">
-                  <!-- @if (!loginValid) {
-                    <mat-error>Incorrect username or password</mat-error>
-                  } -->
+              <form #loginForm="ngForm" (ngSubmit)="login(loginForm)">
                   <mat-form-field>
                       <mat-label>Name</mat-label>
-                      <!--   [(ngModel)]="user.name"-->
                       <input
                         matInput
                         name="name"
+                        [(ngModel)]="user.name"
                         required>
                       <mat-icon matSuffix>person</mat-icon>
                   </mat-form-field>
@@ -24,18 +20,22 @@
                       <input
                         matInput
                         name="password"
+                        [type]="showPassword ? 'text' : 'password'"
+                        [(ngModel)]="user.password"
                         required>
-                        <!-- [type]="showPassword ? 'text' : 'password'"
-                        matInput
-                        [(ngModel)]="user.password" -->
                       <mat-icon matSuffix>lock</mat-icon>
                   </mat-form-field>
                   <div class="boxPasswordCheck">
-                    <!-- [(ngModel)]="showPassword" -->
-                    <mat-checkbox name="showPassword">
+                    <mat-checkbox name="showPassword" [(ngModel)]="showPassword">
                       <p class="textPass">Show Password</p>
                     </mat-checkbox>
                   </div>
+
+                  @if (!loginValid) {
+                    <mat-error class="error-message">
+                      Invalid name or password. Please try again.
+                    </mat-error>
+                  }
                   <button mat-raised-button color="primary" type="submit" [disabled]="!loginForm.form.valid">Login</button>
               </form>
           </mat-card-content>
