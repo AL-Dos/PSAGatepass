@@ -1,21 +1,19 @@
 import { Routes } from '@angular/router';
-import { AuditPage } from './Pages/audit-page/audit-page';
-import { LandingPage } from './Pages/landing-page/landing-page';
+import { Landing } from './Pages/landing/landing';
+import { Dashboard } from './Pages/dashboard/dashboard';
 
 export const routes: Routes = [
-    {
-        path: '',
-        redirectTo: 'login',
-        pathMatch: 'full'
-    },
-    {
-        path: 'login',
-        component:LandingPage,
-        // canActivate: [Login]
-    },
-    {
-        path: 'database',
-        component:AuditPage,
-        // canActivate: [Logout]
-    }
+  {
+    path: '',
+    redirectTo: 'login',
+    pathMatch: 'full',
+  },
+  {
+    path: 'login',
+    component: Landing
+  },
+  {
+    path: 'dashboard',
+    component: Dashboard
+  }
 ];

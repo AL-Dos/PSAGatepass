@@ -1,18 +1,17 @@
-import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { FormsModule, NgForm } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { Router } from '@angular/router';
+import { AuthService } from '../../Services/auth/auth.service';
+import { MatIconModule } from '@angular/material/icon';
 import { MatCardModule } from '@angular/material/card';
 import { MatCheckboxModule } from '@angular/material/checkbox';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
-import { Router } from '@angular/router';
-import { AuthService } from '../../Service/Auth/auth.service';
 
 @Component({
   selector: 'app-login',
-  imports: [FormsModule, CommonModule, MatCardModule, MatInputModule, MatButtonModule, MatIconModule, MatFormFieldModule, MatCheckboxModule],
+  imports: [FormsModule, MatCardModule, MatInputModule, MatButtonModule, MatIconModule, MatFormFieldModule, MatCheckboxModule],
   templateUrl: './login.html',
   styleUrl: './login.css'
 })
@@ -25,7 +24,7 @@ export class Login {
   loginValid = true;
   showPassword = false;
 
-    constructor(private auth: AuthService, private router: Router) {}
+  constructor(private auth: AuthService, private router: Router) {}
 
   login(form: NgForm) {
     if (!form.valid) return;

@@ -1,20 +1,20 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { AuditTable } from './audit-table';
+import { AuthService } from './auth.service';
 
-describe('AuditTable', () => {
-  let component: AuditTable;
-  let fixture: ComponentFixture<AuditTable>;
+describe('Auth', () => {
+  let component: AuthService;
+  let fixture: ComponentFixture<AuthService>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [AuditTable]
+      imports: [AuthService]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(AuditTable);
+    fixture = TestBed.createComponent(AuthService);
     component = fixture.componentInstance;
-    fixture.detectChanges();
+    await fixture.whenStable();
   });
 
   it('should create', () => {

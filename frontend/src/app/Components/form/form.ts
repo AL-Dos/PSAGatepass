@@ -1,4 +1,3 @@
-import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Component } from '@angular/core';
 import { FormsModule, NgForm } from '@angular/forms';
@@ -8,17 +7,15 @@ import { MatDialogModule } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
-import { warn } from 'console';
 import { AutofocusDirective } from '../../Directive/autofocus.directive';
 
 @Component({
-  selector: 'app-audit-form',
-  imports: [FormsModule, CommonModule, MatCardModule, MatIconModule, MatButtonModule,
-            MatInputModule, MatFormFieldModule, MatDialogModule, AutofocusDirective],
-  templateUrl: './audit-form.html',
-  styleUrl: './audit-form.css'
+  selector: 'app-form',
+  imports: [FormsModule, MatCardModule, MatIconModule, MatButtonModule, MatInputModule, MatFormFieldModule, MatDialogModule, AutofocusDirective,],
+  templateUrl: './form.html',
+  styleUrl: './form.css',
 })
-export class AuditForm {
+export class Form {
   showSuccess = false;
 
   constructor(private http: HttpClient) {}
@@ -97,3 +94,4 @@ export class AuditForm {
       });
   }
 }
+

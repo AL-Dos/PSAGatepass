@@ -1,4 +1,4 @@
-import { CommonModule} from '@angular/common';
+import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatNativeDateModule } from '@angular/material/core';
@@ -9,14 +9,23 @@ import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatSortModule } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
 
+export const DASHBOARD_TABLE_COLUMNS = [CommonModule,
+    MatTableModule,
+    MatSortModule,
+    MatPaginatorModule,
+    MatButtonModule,
+    MatIconModule,
+    MatInputModule,
+    MatDatepickerModule,
+    MatNativeDateModule] as const;
+
 @Component({
-  selector: 'app-audit-page',
-  imports: [CommonModule, MatTableModule, MatPaginatorModule, MatSortModule,
-            MatInputModule, MatButtonModule, MatIconModule, MatDatepickerModule,
-            MatNativeDateModule],
-  templateUrl: './audit-page.html',
-  styleUrl: './audit-page.css'
+  selector: 'app-dashboard',
+  standalone: true,
+  imports: [...DASHBOARD_TABLE_COLUMNS],
+  templateUrl: './dashboard.html',
+  styleUrl: './dashboard.css',
 })
-export class AuditPage {
+export class Dashboard {
 
 }
