@@ -33,9 +33,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter{
     protected void doFilterInternal(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull FilterChain filterChain
     ) throws ServletException, IOException {
         String token = extractToken(request);
-        String path = request.getServletPath();
         
-        if ("/api/login".equals(path) || "/api/logout".equals(path)) {
+        if (token == null || !jwtUtil.validateToken(token)) {
             filterChain.doFilter(request, response);
             return;
         }

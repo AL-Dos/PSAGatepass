@@ -61,7 +61,7 @@ public class AuthController {
 
             response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
 
-            return ResponseEntity.ok(new LoginResponse(token));
+            return ResponseEntity.ok(Map.of("authenticated", true));
         } catch (AuthenticationException e) {
             log.warn("Login failed for { " + request.getName() + " }: " + "{ " + e.getMessage() + " }");
             return ResponseEntity.status(401).body("Invalid Credentials");
@@ -82,23 +82,15 @@ public class AuthController {
     }
 
     @GetMapping("/me")
-    public ResponseEntity<Map<String, Object>> me(Authentication authentication) {
-        if (authentication == null || !authentication.isAuthenticated()) {
-            return ResponseEntity.ok(Map.of("authenticated", false));
-        }
-        return ResponseEntity.ok(Map.of(
-            "authenticated", true
-        ));
+    public ResponseEntity<Map<String, Object>> me(Authentication auth) {
+        return ResponseEntity.ok(
+            Map.of("authenticated", auth != null && auth.isAuthenticated())
+        );
     }
 
     @Data
     public static class LoginRequest {
         private String name;
         private String password;
-    }
-
-    @Data
-    public static class LoginResponse {
-        private final String token;
-    }    
+    }   
 }
