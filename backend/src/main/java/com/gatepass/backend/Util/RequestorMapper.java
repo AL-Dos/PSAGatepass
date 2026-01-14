@@ -22,10 +22,7 @@ public class RequestorMapper {
 
         List<EquipmentResponseDTO> items = entity.getEquipment() == null ? List.of() : entity.getEquipment().stream().map(this::toEquipmentDto).collect(Collectors.toList());
         dto.setEquipmentItems(items);
-
-        dto.setNotedBy(entity.getNotedBy());
-        dto.setApprovedBy(entity.getApprovedBy());
-        dto.setReturnedCheck(entity.getReturnedCheck());
+        
         return dto;
     }
 

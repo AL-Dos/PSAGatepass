@@ -34,11 +34,4 @@ public class Requestors {
     @OneToMany(mappedBy = "requestor", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
     private List<Equipments> equipment;
-
-    @Column(name = "noted_by")
-    private String notedBy;
-    @Column(name = "approved_by")
-    private String approvedBy;
-    @Column(name = "returned_check")
-    private String returnedCheck;
 }

@@ -16,55 +16,31 @@
     <!-- Id Column -->
     <ng-container matColumnDef="id">
       <th mat-header-cell *matHeaderCellDef mat-sort-header> ID </th>
-      <td mat-cell *matCellDef="let employee"> {{employee.id.toString().padStart(4, '0')}} </td>
-    </ng-container>
-
-    <!-- Date Column -->
-    <ng-container matColumnDef="date">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header> Date </th>
-      <td mat-cell *matCellDef="let employee"> {{employee.date | date:'MM-dd-yyyy'}} </td>
+      <td mat-cell *matCellDef="let blank"> </td>
     </ng-container>
 
     <!-- Equipment -->
     <ng-container matColumnDef="equip">
       <th mat-header-cell *matHeaderCellDef mat-sort-header> Description of Property/Equipment </th>
-      <td mat-cell *matCellDef="let employee"> {{employee.docOwner}} </td>
+      <td mat-cell *matCellDef="let blank">  </td>
     </ng-container>
 
     <!-- Property Number -->
     <ng-container matColumnDef="pNum">
       <th mat-header-cell *matHeaderCellDef mat-sort-header> Property Number </th>
-      <td mat-cell *matCellDef="let employee"> {{employee.copies}} </td>
+      <td mat-cell *matCellDef="let blank">  </td>
     </ng-container>
 
     <!-- Destination -->
     <ng-container matColumnDef="dest">
       <th mat-header-cell *matHeaderCellDef mat-sort-header> Destination </th>
-      <td mat-cell *matCellDef="let employee"> {{employee.amountPaid}} </td>
+      <td mat-cell *matCellDef="let blank">  </td>
     </ng-container>
 
     <!-- Period Covered -->
     <ng-container matColumnDef="pCover">
       <th mat-header-cell *matHeaderCellDef mat-sort-header> Period Covered </th>
-      <td mat-cell *matCellDef="let employee"> {{employee.docOwnerId}} </td>
-    </ng-container>
-
-    <!-- Property Custodian -->
-    <ng-container matColumnDef="pCust">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header> Property Custodian </th>
-      <td mat-cell *matCellDef="let employee"> {{employee.authLetter}} </td>
-    </ng-container>
-
-    <!-- CSS/OIC -->
-    <ng-container matColumnDef="oic">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header> CSS/OIC </th>
-      <td mat-cell *matCellDef="let employee"> {{employee.employeeId}} </td>
-    </ng-container>
-
-    <!-- Guard -->
-    <ng-container matColumnDef="guard">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header> Security Guard </th>
-      <td mat-cell *matCellDef="let employee"> {{employee.employeeName}} </td>
+      <td mat-cell *matCellDef="let blank"> </td>
     </ng-container>
 
     <!-- Render rows -->
