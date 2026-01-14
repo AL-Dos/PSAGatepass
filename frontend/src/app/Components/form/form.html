@@ -92,8 +92,15 @@
               />
             </mat-form-field>
 
-            <button mat-raised-button color="warn" (click)="removeEquipment(i)">
-              <mat-icon class="iconColor">delete</mat-icon>
+            <button
+              mat-icon-button
+              color="warn"
+              type="button"
+              aria-label="Delete equipment"
+              (click)="removeEquipment(i)"
+              class="delete-btn"
+            >
+              <mat-icon>delete</mat-icon>
             </button>
           </div>
         }
