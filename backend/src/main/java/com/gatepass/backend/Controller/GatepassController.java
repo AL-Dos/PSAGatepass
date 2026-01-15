@@ -3,31 +3,26 @@ package com.gatepass.backend.Controller;
 import java.util.stream.Collectors;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 
 import com.gatepass.backend.Data.RequestorDTO;
 import com.gatepass.backend.Model.Equipments;
 import com.gatepass.backend.Model.Requestors;
 import com.gatepass.backend.Repository.RequestorRepository;
-import com.gatepass.backend.Util.RequestorMapper;
 
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
+import java.util.List;
 
 @Controller
 @RequestMapping("/api")
 public class GatepassController {
     private final RequestorRepository requestorRepo;
-    private final RequestorMapper requestorMapper;
 
-    public GatepassController(RequestorRepository requestorRepo, RequestorMapper requestorMapper) {
+    public GatepassController(RequestorRepository requestorRepo) {
         this.requestorRepo = requestorRepo;
-        this.requestorMapper = requestorMapper;
     }
 
     @PostMapping("/submit")
@@ -57,23 +52,9 @@ public class GatepassController {
         return ResponseEntity.ok(saved);
     }
 
-    @GetMapping("/list")
-    @PreAuthorize("hasAnyRole('OIC','CUSTODIAN','GUARD')")
-    public ResponseEntity<?> getAllRequestor() {
-        var list = requestorRepo.findAll();
-        return ResponseEntity.ok(requestorMapper.toDtoList(list));
-    }
-
-    @GetMapping("/listById/{id}")
-    @PreAuthorize("hasAnyRole('OIC','CUSTODIAN','GUARD')")
-    public ResponseEntity<?> getRequestorById(@PathVariable Long id) {
-        return requestorRepo.findById(id).map(requestorMapper::toDto).map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
-    }
-
-    @GetMapping("/list/search")
-    @PreAuthorize("hasAnyRole('OIC','CUSTODIAN','GUARD')")
-    public ResponseEntity<?> searchbyName(@RequestParam("q") String query) {
-        var list = requestorRepo.findByNameContainingIgnoreCase(query);
-        return ResponseEntity.ok(requestorMapper.toDtoList(list));
+    @GetMapping("/requestors")
+    public ResponseEntity<List<Requestors>> getAllRequestors() {
+        List<Requestors> requestors = requestorRepo.findAll();
+        return ResponseEntity.ok(requestors);
     }
 }

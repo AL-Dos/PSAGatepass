@@ -12,6 +12,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -82,10 +83,15 @@ public class AuthController {
     }
 
     @GetMapping("/me")
-    public ResponseEntity<Map<String, Object>> me(Authentication auth) {
-        return ResponseEntity.ok(
-            Map.of("authenticated", auth != null && auth.isAuthenticated())
-        );
+    public ResponseEntity<Map<String, Object>> me(Authentication authentication) {
+        if (authentication == null || !authentication.isAuthenticated()) {
+            return ResponseEntity.ok(Map.of("authenticated", false));
+        }
+        return ResponseEntity.ok(Map.of(
+            "authenticated", true,
+            "name", authentication.getName(),
+            "roles", authentication.getAuthorities().stream().map(GrantedAuthority::getAuthority).toList()
+        ));
     }
 
     @Data

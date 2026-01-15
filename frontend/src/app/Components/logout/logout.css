@@ -1,0 +1,54 @@
+mat-card{
+    max-width: 500px;
+    text-align: center;
+    background-color: #f1efeffa;
+    border-radius: 12px;
+    border-color: black;
+    box-shadow: 0px 4px 24px rgba(22, 22, 22, 0.815);
+    padding: 15px;
+    position: relative;
+}
+
+mat-card-header{
+    height: 45px;
+    color: black;
+}
+
+.button-group {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin-top: 5px;
+}
+
+.buttons {
+    padding: 5px 15px;
+    border-radius: 6px;
+    color: #fff;
+    font-size: 1rem;
+    border: none;
+    cursor: pointer;
+    font-weight: 500;
+    transition: background 0.5s;
+    box-shadow: 0px 4px 15px rgba(22, 22, 22, 0.829);
+}
+
+.buttons:hover {
+    background: #5c63f6;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.4);
+    transform: translateY(-1px);
+}
+
+.buttons:active {
+    transform: translateY(0);
+    box-shadow: 0px 1px 3px rgba(0, 0, 0, 0.5);
+    background: #3b40a4;
+}
+
+p {
+    margin-left: 15px;
+    font-size: 20px;
+    font-family: Impact;
+    letter-spacing: 2px;
+    word-spacing: 3px;
+}

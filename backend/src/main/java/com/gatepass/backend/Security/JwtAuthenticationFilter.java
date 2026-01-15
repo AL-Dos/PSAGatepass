@@ -33,11 +33,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter{
     protected void doFilterInternal(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull FilterChain filterChain
     ) throws ServletException, IOException {
         String token = extractToken(request);
-        
-        if (token == null || !jwtUtil.validateToken(token)) {
-            filterChain.doFilter(request, response);
-            return;
-        }
 
         if (token != null && jwtUtil.validateToken(token)) {
             String name = jwtUtil.getName(token);
@@ -70,5 +65,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter{
         }
 
         return null;
+    }
+
+    @Override
+    protected boolean shouldNotFilter(@NonNull HttpServletRequest request) {
+        return request.getMethod().equalsIgnoreCase("OPTIONS") || request.getServletPath().equals("/api/login");
     }
 }

@@ -16,25 +16,30 @@ import { MatInputModule } from '@angular/material/input';
   styleUrl: './login.css'
 })
 export class Login {
-  user = {
-    name: '',
-    password: ''
-  };
+  user = { name: '', password: '' };
 
   loginValid = true;
   showPassword = false;
+  loading = false;
 
   constructor(private auth: AuthService, private router: Router) {}
 
-  login(form: NgForm) {
-    if (!form.valid) return;
-
-    this.auth.login(this.user.name, this.user.password).subscribe({
-      next: () => {
-        this.loginValid = true;
-        this.router.navigate(['/dashboard']);
+  login(): void {
+    this.loading = true;
+    this.auth.login(this.user).subscribe({
+      next: success => {
+        this.loading = false;
+        if (success) {
+          this.loginValid = true;
+          console.log('Login success');
+          queueMicrotask(() => this.router.navigate(['/dashboard']));
+        } else {
+          this.loginValid = false;
+        }
       },
-      error: () => {
+      error: err => {
+        this.loading = false;
+        console.error('Login failed:', err);
         this.loginValid = false;
       }
     });
