@@ -16,7 +16,7 @@ p {
 }
 
 .mat-column-id, .mat-column-date, .mat-column-equip, .mat-column-quan, .mat-column-pNum, .mat-column-dest,
-.mat-column-pCover, .mat-column-pCust, .mat-column-oic, .mat-column-guard {
+.mat-column-pCover, .mat-column-pCust, .mat-column-oic, .mat-column-guard, .mat-column-req {
   width: 35px;
   border-right: 1px solid rgba(201, 198, 198, 0.774);
   padding-right: 24px;

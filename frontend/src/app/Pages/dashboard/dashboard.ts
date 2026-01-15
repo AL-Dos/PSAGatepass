@@ -39,7 +39,7 @@ interface EquipmentData {
 })
 export class Dashboard implements OnInit {
   dataSource = new MatTableDataSource<EquipmentData>();
-  displayedColumns: string[] = ['id', 'equip', 'quan', 'pNum', 'dest', 'pCover'];
+  displayedColumns: string[] = ['id', 'equip', 'quan', 'pNum', 'dest', 'pCover', 'req'];
 
   @ViewChild(MatSort) sort!: MatSort;
   @ViewChild(MatPaginator) paginator!: MatPaginator;
@@ -63,6 +63,8 @@ export class Dashboard implements OnInit {
           return item.destination;
         case 'pCover':
           return item.period;
+        case 'req':
+          return item.requestorName;
         default:
           return '';
       }
