@@ -28,3 +28,7 @@ header {
 .logo {
   width: clamp(40px, 4vw, 70px);
 }
+
+.logout-btn {
+  margin-right: 20px;
+}

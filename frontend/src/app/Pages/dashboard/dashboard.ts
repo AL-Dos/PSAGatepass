@@ -39,8 +39,8 @@ interface EquipmentData {
 })
 export class Dashboard implements OnInit {
   dataSource = new MatTableDataSource<EquipmentData>();
-  displayedColumns: string[] = ['id', 'equip', 'pNum', 'dest', 'pCover'];
-  
+  displayedColumns: string[] = ['id', 'equip', 'quan', 'pNum', 'dest', 'pCover'];
+
   @ViewChild(MatSort) sort!: MatSort;
   @ViewChild(MatPaginator) paginator!: MatPaginator;
 
@@ -48,13 +48,32 @@ export class Dashboard implements OnInit {
 
   ngOnInit() {
     this.loadEquipment();
+
+    this.dataSource.sortingDataAccessor = (item, property) => {
+      switch (property) {
+        case 'id':
+          return item.id;
+        case 'equip':
+          return item.equipmentName;
+        case 'quan':
+          return item.quantity;
+        case 'pNum':
+          return item.equipmentCode;
+        case 'dest':
+          return item.destination;
+        case 'pCover':
+          return item.period;
+        default:
+          return '';
+      }
+    };
   }
 
   loadEquipment() {
     this.equipmentService.getAllEquipment().subscribe({
       next: (requestors: any[]) => {
         const equipmentData: EquipmentData[] = [];
-        
+
         // Flatten the nested equipment from each requestor
         requestors.forEach(requestor => {
           if (requestor.equipment && Array.isArray(requestor.equipment)) {

@@ -8,20 +8,21 @@ p {
   text-align: center;
   font-size: clamp(1.1rem, 2vw, 2.1rem);
   font-weight: bold;
-  font-family:Impact;
   color: black;
   letter-spacing: 2.5px;
   word-spacing: 5px;
-  margin-top: calc(7vh + 7vh);
+  font-family: "Iansui", cursive;
+  margin-top: calc(5vh);
 }
 
-.mat-column-id, .mat-column-date, .mat-column-equip, .mat-column-pNum, .mat-column-dest,
+.mat-column-id, .mat-column-date, .mat-column-equip, .mat-column-quan, .mat-column-pNum, .mat-column-dest,
 .mat-column-pCover, .mat-column-pCust, .mat-column-oic, .mat-column-guard {
   width: 35px;
   border-right: 1px solid rgba(201, 198, 198, 0.774);
   padding-right: 24px;
   text-align: center;
-  font-size: 11px;
+  font-size: 17px;
+  font-family: "Iansui", cursive;
 }
 
 .mat-column-actions {
@@ -29,6 +30,7 @@ p {
   padding-right: 24px;
   text-align: center;
   font-size: 11px;
+  font-family: "Iansui", cursive;
 }
 
 .table-container {
@@ -50,6 +52,7 @@ p {
   border-collapse: collapse;
   border-spacing: 0;
   word-wrap: break-word;
+  font-family: "Iansui", cursive;
   border-radius: 20px;
 }
 

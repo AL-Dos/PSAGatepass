@@ -3,4 +3,7 @@
     <img src="PSALogo.png" alt="Logo" class="logo"/>
     <nav class="title">GATEPASS</nav>
   </div>
+  @if (isDashboard) {
+    <button mat-raised-button color="warn" (click)="logout()" class="logout-btn">Logout</button>
+  }
 </header>
