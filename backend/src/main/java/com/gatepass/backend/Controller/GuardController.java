@@ -38,17 +38,18 @@ public class GuardController {
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody GuardLoginDTO dto) {
 
-        Guard guard = guardRepo.findByPin(dto.getPin()).orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED));
+        Guard guard = guardRepo.findByName(dto.getName()).orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED));
 
         if (!guard.isActive()) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Inactive guard");
         }
 
-        if (!encoder.matches(dto.getPin(), guard.getPinHash())) {
+        if (!encoder.matches(dto.getName(), guard.getPinHash())) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid PIN");
         }
 
         UserDetails guardUser = User.builder()
+            .username(guard.getName())
             .password("")
             .roles("GUARD")
             .build();

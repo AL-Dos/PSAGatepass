@@ -8,5 +8,5 @@ import java.util.Optional;
 
 @Repository
 public interface GuardRepository extends JpaRepository<Guard, Long> {
-    Optional<Guard> findByPin(String pin);
+    Optional<Guard> findByName(String name);
 }

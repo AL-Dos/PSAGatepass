@@ -22,6 +22,9 @@ public class Guard {
     @Column(name = "pin_hash")
     private String pinHash;
 
+    @Column(name = "name")
+    private String name;
+
     @Column(name = "active")
     private boolean active = true;
 }
