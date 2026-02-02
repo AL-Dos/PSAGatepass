@@ -39,33 +39,45 @@ public class GatepassController {
     }
 
     @PostMapping("/submit")
-    public ResponseEntity<?> submitJson(@RequestBody RequestorDTO form) { 
+    public ResponseEntity<?> submitJson(@RequestBody RequestorDTO form) {
         if (form.getEquipmentItems() == null) {
             return ResponseEntity.badRequest().body("equipmentItems is required");
         }
-        
+
         Requestors requestor = new Requestors();
         requestor.setName(form.name);
         requestor.setDestination(form.destination);
         requestor.setPeriod(form.period);
 
+        // Save Requestor first to generate ID
+        requestor = requestorRepo.save(requestor);
+
         Gatepass gatepass = new Gatepass();
         gatepass.setQrToken(UUID.randomUUID().toString());
         gatepass.setRequestor(requestor);
+
+        // Save Gatepass to generate ID
+        gatepass = gatepassRepo.save(gatepass);
+
+        // Capture effectively final variables for lambda
+        final Requestors savedRequestor = requestor;
+        final Gatepass savedGatepass = gatepass;
 
         var items = form.equipmentItems.stream().map(itemDto -> {
             Equipments item = new Equipments();
             item.setEquipmentName(itemDto.equipmentName);
             item.setQuantity(itemDto.quantity);
             item.setEquipmentCode(itemDto.equipmentCode);
-            item.setGatepass(gatepass);
+            item.setGatepass(savedGatepass);
+            item.setRequestor(savedRequestor);
             return item;
-        }).toList();
+        }).collect(java.util.stream.Collectors.toList());
 
-        requestor.setEquipment(items);
-        gatepass.setEquipments(items);
+        savedRequestor.setEquipment(items);
+        savedGatepass.setEquipments(items);
 
-        requestorRepo.save(requestor);
+        // Save Requestor again to cascade save Equipments
+        requestorRepo.save(savedRequestor);
 
         String qrUrl = "http://localhost:4200/verify/" + gatepass.getQrToken();
 
@@ -73,9 +85,9 @@ public class GatepassController {
 
         byte[] pdf = GatepassUtil.createMultiItemPdf(qrImage, items);
         return ResponseEntity.ok()
-            .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"gatepass.pdf\"")
-            .contentType(MediaType.APPLICATION_PDF)
-            .body(pdf);
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"gatepass.pdf\"")
+                .contentType(MediaType.APPLICATION_PDF)
+                .body(pdf);
     }
 
     @GetMapping("/requestors")
@@ -94,11 +106,10 @@ public class GatepassController {
         }
 
         return ResponseEntity.ok(Map.of(
-            "released", gatepass.isReleased(),
-            "returned", gatepass.isReturned(),
-            "requestor", gatepass.getRequestor().getName(),
-            "equipment", gatepass.getEquipments()
-        ));
+                "released", gatepass.isReleased(),
+                "returned", gatepass.isReturned(),
+                "requestor", gatepass.getRequestor().getName(),
+                "equipment", gatepass.getEquipments()));
     }
 
     @PostMapping("/verify/{token}/release")

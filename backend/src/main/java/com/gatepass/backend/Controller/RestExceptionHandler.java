@@ -16,6 +16,7 @@ public class RestExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<?> handleAny(Exception exception) {
-        return ResponseEntity.status(500).body(Map.of("error", "ServerError", "message", exception.getMessage()));
-    } 
+        String message = exception.getMessage() != null ? exception.getMessage() : "Unknown error occurred";
+        return ResponseEntity.status(500).body(Map.of("error", "ServerError", "message", message));
+    }
 }

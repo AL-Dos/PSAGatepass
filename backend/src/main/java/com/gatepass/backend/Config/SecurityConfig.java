@@ -32,7 +32,7 @@ public class SecurityConfig {
 
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
-    return config.getAuthenticationManager();
+        return config.getAuthenticationManager();
     }
 
     @Bean
@@ -43,31 +43,23 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-            .csrf(csrf -> csrf.disable())
-            .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-            .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/actuator/health", "/actuator/info", "/api/submit", "/api/login", "/api/me").permitAll()
-                .requestMatchers("/api/logout", "/api/list/**").hasRole("ADMIN")
-                .requestMatchers("/api/verify/**").hasRole("GUARD")
-                .anyRequest().authenticated()
-            )
-            .addFilterBefore((Filter) jwtFilter, UsernamePasswordAuthenticationFilter.class);
+                .csrf(csrf -> csrf.disable())
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/actuator/health", "/actuator/info", "/api/submit", "/api/login", "/api/me",
+                                "/api/verify/**", "/api/guard/scan")
+                        .permitAll()
+                        .requestMatchers("/api/logout", "/api/list/**").hasRole("ADMIN")
+                        .anyRequest().authenticated())
+                .addFilterBefore((Filter) jwtFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(List.of(
-            "http://localhost:4200", 
-            "http://127.0.0.1:4200",
-            "http://127.0.0.1", 
-            "http://localhost",
-            "http://gatepass.local",
-            "localhost",
-            "gatepass.local"
-             ));
+        config.setAllowedOriginPatterns(List.of("*"));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
         config.setAllowCredentials(true);

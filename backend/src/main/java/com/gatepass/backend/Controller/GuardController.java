@@ -18,47 +18,102 @@ import com.gatepass.backend.Model.Guard;
 import com.gatepass.backend.Repository.GuardRepository;
 import com.gatepass.backend.Security.JwtUtil;
 
+import com.gatepass.backend.Repository.GatepassRepository;
+
 @RestController
 @RequestMapping("/api/guard")
 public class GuardController {
     private final GuardRepository guardRepo;
     private final PasswordEncoder encoder;
     private final JwtUtil jwtUtil;
+    private final GatepassRepository gatepassRepo;
 
     public GuardController(
-        GuardRepository guardRepo,
-        PasswordEncoder encoder,
-        JwtUtil jwtUtil
-    ) {
+            GuardRepository guardRepo,
+            PasswordEncoder encoder,
+            JwtUtil jwtUtil,
+            GatepassRepository gatepassRepo) {
         this.guardRepo = guardRepo;
         this.encoder = encoder;
         this.jwtUtil = jwtUtil;
+        this.gatepassRepo = gatepassRepo;
     }
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody GuardLoginDTO dto) {
 
-        Guard guard = guardRepo.findByName(dto.getName()).orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED));
+        Guard guard = guardRepo.findByName(dto.getName())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED));
 
         if (!guard.isActive()) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Inactive guard");
         }
 
-        if (!encoder.matches(dto.getName(), guard.getPinHash())) {
+        if (!encoder.matches(dto.getPin(), guard.getPinHash())) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid PIN");
         }
 
         UserDetails guardUser = User.builder()
-            .username(guard.getName())
-            .password("")
-            .roles("GUARD")
-            .build();
+                .username(guard.getName())
+                .password("")
+                .roles("GUARD")
+                .build();
 
         String token = jwtUtil.generateToken(guardUser);
 
         return ResponseEntity.ok(Map.of(
-            "token", token,
-            "role", "GUARD"
-        ));
+                "token", token,
+                "role", "GUARD"));
+    }
+
+    @PostMapping("/scan")
+    public ResponseEntity<?> scan(@RequestBody com.gatepass.backend.Data.ScanRequestDTO dto) {
+        if (dto.getQrToken() == null || dto.getPin() == null) {
+            return ResponseEntity.badRequest().body("Missing QR Token or PIN");
+        }
+
+        // Validate PIN against any active guard (In production, maybe bind to logged in
+        // guard)
+        // For this specific request "inputs his special code", we verify if ANY active
+        // guard owns this PIN.
+        Guard verifiedGuard = null;
+        for (Guard g : guardRepo.findAll()) {
+            if (g.isActive() && encoder.matches(dto.getPin(), g.getPinHash())) {
+                verifiedGuard = g;
+                break;
+            }
+        }
+
+        if (verifiedGuard == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid Security PIN");
+        }
+
+        com.gatepass.backend.Model.Gatepass gatepass = gatepassRepo.findByQrToken(dto.getQrToken());
+
+        if (gatepass == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Invalid QR Code");
+        }
+
+        String action = "";
+
+        if (!gatepass.isReleased()) {
+            gatepass.setReleased(true);
+            gatepass.setReleasedAt(java.time.LocalDateTime.now());
+            action = "Released";
+        } else if (!gatepass.isReturned()) {
+            gatepass.setReturned(true);
+            gatepass.setReturnedAt(java.time.LocalDateTime.now());
+            action = "Returned";
+        } else {
+            return ResponseEntity.badRequest().body("Gatepass already completed (Returned)");
+        }
+
+        gatepassRepo.save(gatepass);
+
+        return ResponseEntity.ok(Map.of(
+                "message", "Success: Items " + action,
+                "guard", verifiedGuard.getName(),
+                "action", action,
+                "gatepass", gatepass));
     }
 }

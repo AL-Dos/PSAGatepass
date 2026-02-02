@@ -17,5 +17,9 @@ export const routes: Routes = [
     path: 'dashboard',
     component: Dashboard,
     canActivate: [AuthGuard]
+  },
+  {
+    path: 'guard',
+    loadComponent: () => import('./Pages/guard-scan/guard-scan').then(m => m.GuardScan)
   }
 ];

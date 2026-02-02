@@ -84,11 +84,22 @@ export class Form {
       return;
     }
 
-    this.http.post('http://localhost:8090/api/submit', filteredModel)
+    const baseUrl = `http://${window.location.hostname}:8090/api/submit`;
+    this.http.post(baseUrl, filteredModel, { responseType: 'blob' })
       .subscribe({
-        next: () => {
+        next: (response: Blob) => {
           this.showSuccess = true;
           setTimeout(() => this.showSuccess = false, 6000);
+
+          // Trigger download
+          const url = window.URL.createObjectURL(response);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = 'gatepass.pdf';
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          window.URL.revokeObjectURL(url);
         },
         error: (err) => console.error(err)
       });
