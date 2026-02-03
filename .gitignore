@@ -1,5 +1,28 @@
-# env
-*.env
+# Ignore node modules
+backend/node_modules/
 
-# backups
-/backups
+# Maven/Gradle build outputs
+backend/target/
+
+# IDE
+*.iml
+.idea/
+.vscode/
+
+# Docker env
+.env
+
+# Logs
+*.log
+
+# OS
+.DS_Store
+
+# Build
+frontend/dist/
+
+# Backup
+/backup/
+/backup/host_backup.sh
+*.sql
+.sh
