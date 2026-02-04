@@ -8,6 +8,7 @@ backend/target/
 *.iml
 .idea/
 .vscode/
+.docker-compose.yaml
 
 # Docker env
 .env
@@ -26,3 +27,7 @@ frontend/dist/
 /backup/host_backup.sh
 *.sql
 .sh
+
+# Docker
+docker-compose.yaml
+dnsmasq.conf

@@ -19,8 +19,8 @@ export interface ScanResponse {
 })
 export class GuardService {
   private http = inject(HttpClient);
-  // Dynamically determine backend URL (assuming same host, port 8090)
-  private baseUrl = `http://${window.location.hostname}:8090/api/guard`;
+  // Same-origin API base (works via Angular dev proxy and Nginx in prod)
+  private baseUrl = `/api/guard`;
 
   constructor() {}
 

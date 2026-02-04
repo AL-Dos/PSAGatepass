@@ -84,7 +84,8 @@ export class Form {
       return;
     }
 
-    const baseUrl = `http://${window.location.hostname}:8090/api/submit`;
+    // Use same-origin API path so it works in dev (proxy) and prod (nginx)
+    const baseUrl = `/api/submit`;
     this.http.post(baseUrl, filteredModel, { responseType: 'blob' })
       .subscribe({
         next: (response: Blob) => {

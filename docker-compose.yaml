@@ -56,6 +56,18 @@ services:
     networks:
       - transmittal_network
 
+  dns:
+    image: jpillora/dnsmasq
+    container_name: dnsmasq-gp
+    ports:
+      - "53:53/udp"
+      - "53:53/tcp"
+    volumes:
+      - ./dnsmasq.conf:/etc/dnsmasq.conf:ro
+    restart: unless-stopped
+    networks:
+      - transmittal_network
+
 volumes:
   db_data:
 
