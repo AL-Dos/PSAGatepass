@@ -30,4 +30,9 @@ frontend/dist/
 
 # Docker
 docker-compose.yaml
-dnsmasq.conf
+etc-dnsmasq.d/02-local.conf
+
+# Certificates
+/certs/
+192.168.229.1+3-key.pem
+192.168.229.1+3.pem
