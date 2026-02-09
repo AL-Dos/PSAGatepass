@@ -61,13 +61,21 @@ public class SecurityConfig {
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowedOriginPatterns(List.of(
                 "http://localhost:4200",
+                "https://localhost:4200",
                 "http://localhost:8084",
+                "https://localhost:8084",
                 "http://127.0.0.1:4200",
+                "https://127.0.0.1:4200",
                 "http://127.0.0.1:8084",
+                "https://127.0.0.1:8084",
                 "http://127.0.0.1",
+                "https://127.0.0.1",
                 "http://localhost",
+                "https://localhost",
                 "http://gatepass.local",
+                "https://gatepass.local",
                 "http://gatepass.local:8084",
+                "https://gatepass.local:8084",
                 "localhost",
                 "gatepass.local"));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));

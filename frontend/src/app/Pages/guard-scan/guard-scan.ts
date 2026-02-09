@@ -30,6 +30,7 @@ export class GuardScan implements OnInit, OnDestroy {
   pin = signal<string>('');
   loading = signal<boolean>(false);
   result = signal<any>(null);
+  cameraFacing = signal<'environment' | 'user'>('environment');
 
   constructor(
     private guardService: GuardService,
@@ -42,15 +43,42 @@ export class GuardScan implements OnInit, OnDestroy {
   }
 
   startScanner() {
-    // Timeout to ensure DOM is ready if needed, or just init
+    // Timeout to ensure DOM is ready if needed
     setTimeout(() => {
+      // Clear existing scanner if present
+      if (this.scanner) {
+        try { this.scanner.clear(); } catch (e) { /* ignore */ }
+        this.scanner = null;
+      }
+
+      const desiredFacing = this.cameraFacing();
+      const config: any = {
+        fps: 10,
+        qrbox: { width: Math.min(480, Math.floor(window.innerWidth * 0.7)), height: Math.min(480, Math.floor(window.innerWidth * 0.7)) },
+        disableFlip: false,
+        // prefer facing mode; library will fall back if not available
+        videoConstraints: { facingMode: { ideal: desiredFacing } }
+      };
+
       this.scanner = new Html5QrcodeScanner(
         "reader",
-        { fps: 10, qrbox: { width: 250, height: 250 } },
+        config,
         /* verbose= */ false
       );
       this.scanner.render(this.onScanSuccess.bind(this), this.onScanFailure.bind(this));
-    }, 100);
+    }, 120);
+  }
+
+  toggleCamera() {
+    // switch between environment (back) and user (front)
+    const next = this.cameraFacing() === 'environment' ? 'user' : 'environment';
+    this.cameraFacing.set(next);
+    // restart scanner to apply new facing mode
+    if (this.scanner) {
+      this.scanner.clear().catch(() => {}).finally(() => this.startScanner());
+    } else {
+      this.startScanner();
+    }
   }
 
   onScanSuccess(decodedText: string, decodedResult: any) {

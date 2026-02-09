@@ -1,50 +1,73 @@
 <div class="scan-container">
   <mat-card class="scan-card">
-    <mat-card-header>
-      <mat-card-title>Guard QR Scanner</mat-card-title>
+    <mat-card-header class="app-bar">
+      <div class="title-wrap">
+        <div class="app-title">Gatepass — Guard Scanner</div>
+        <div class="subtitle">Tap the camera icon to switch front/back</div>
+      </div>
     </mat-card-header>
+
     <mat-card-content>
+      <div class="reader-wrap">
+        <div id="reader"></div>
 
-      <div [hidden]="scannedToken()">
-        <div id="reader" width="100%"></div>
+        <div class="controls">
+          <button mat-icon-button class="cam-toggle" (click)="toggleCamera()" aria-label="Toggle Camera">
+            @switch (cameraFacing()) {
+              @case ('environment') {
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M12 5L14 8H10L12 5Z" fill="currentColor"/>
+                  <path d="M4 7H7L8.5 5H15.5L17 7H20C21.1 7 22 7.9 22 9V18C22 19.1 21.1 20 20 20H4C2.9 20 2 19.1 2 18V9C2 7.9 2.9 7 4 7ZM12 17C14.76 17 17 14.76 17 12C17 9.24 14.76 7 12 7C9.24 7 7 9.24 7 12C7 14.76 9.24 17 12 17Z" fill="currentColor"/>
+                </svg>
+              }
+              @case ('user') {
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M12 2C13.66 2 15 3.34 15 5C15 6.66 13.66 8 12 8C10.34 8 9 6.66 9 5C9 3.34 10.34 2 12 2ZM4 20C4 16 8 14 12 14C16 14 20 16 20 20H4Z" fill="currentColor"/>
+                </svg>
+              }
+            }
+          </button>
+        </div>
       </div>
 
-      @if (scannedToken()) {
-      <div class="pin-form">
-        <h3>QR Token Detected</h3>
-        <p class="token-display">{{ scannedToken() }}</p>
+      <div class="info-panel">
+        @if (scannedToken()) {
+        <div class="pin-form">
+          <h3>QR Token Detected</h3>
+          <p class="token-display">{{ scannedToken() }}</p>
 
-        @if (result()) {
-        <div class="result-box">
-             <h2 [class.released]="result()?.action === 'Released'"
-                 [class.returned]="result()?.action === 'Returned'">
-                 {{ result()?.message }}
-             </h2>
-             <p>Guard: {{ result()?.guard }}</p>
-             <button mat-raised-button color="primary" (click)="resetScan()">Scan Next</button>
-        </div>
-        }
-
-        @if (!result()) {
-        <div>
-          <p>Please enter your PIN to authorize:</p>
-          <mat-form-field appearance="outline" class="w-100">
-            <mat-label>Guard PIN</mat-label>
-            <input matInput type="password" [(ngModel)]="pin" name="pin" required>
-          </mat-form-field>
-
-          <div class="actions">
-            <button mat-stroked-button color="warn" (click)="resetScan()">Cancel</button>
-            <button mat-raised-button color="primary"
-                    [disabled]="!pin() || loading()"
-                    (click)="submitPin()">
-              {{ loading() ? 'Verifying...' : 'Confirm Action' }}
-            </button>
+          @if (result()) {
+          <div class="result-box">
+               <h2 [class.released]="result()?.action === 'Released'"
+                   [class.returned]="result()?.action === 'Returned'">
+                   {{ result()?.message }}
+               </h2>
+               <p>Guard: {{ result()?.guard }}</p>
+               <button mat-raised-button color="primary" (click)="resetScan()">Scan Next</button>
           </div>
+          }
+
+          @if (!result()) {
+          <div>
+            <p>Please enter your PIN to authorize:</p>
+            <mat-form-field appearance="outline" class="w-100">
+              <mat-label>Guard PIN</mat-label>
+              <input matInput type="password" [(ngModel)]="pin" name="pin" required>
+            </mat-form-field>
+
+            <div class="actions">
+              <button mat-stroked-button color="warn" (click)="resetScan()">Cancel</button>
+              <button mat-raised-button color="primary"
+                      [disabled]="!pin() || loading()"
+                      (click)="submitPin()">
+                {{ loading() ? 'Verifying...' : 'Confirm Action' }}
+              </button>
+            </div>
+          </div>
+          }
         </div>
         }
       </div>
-      }
 
     </mat-card-content>
   </mat-card>
