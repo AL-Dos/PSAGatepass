@@ -31,6 +31,7 @@ export class GuardScan implements OnInit, OnDestroy {
   loading = signal<boolean>(false);
   result = signal<any>(null);
   cameraFacing = signal<'environment' | 'user'>('environment');
+  showPassword = signal<boolean>(false);
 
   constructor(
     private guardService: GuardService,
