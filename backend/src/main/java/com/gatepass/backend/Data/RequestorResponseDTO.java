@@ -15,4 +15,5 @@ public class RequestorResponseDTO {
     private String destination;
     private String period;
     private List<EquipmentResponseDTO> equipmentItems;
+    private GatepassDTO gatepass;
 }
