@@ -9,5 +9,5 @@ public class RequestorDTO {
     public String name;
     public String destination;
     public String period;
-    public List<EquipmentDTO> equipmentItems; 
+    public List<EquipmentDTO> equipment; 
 }

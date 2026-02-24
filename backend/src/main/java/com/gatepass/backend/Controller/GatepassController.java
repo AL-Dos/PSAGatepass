@@ -6,7 +6,9 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 
+import com.gatepass.backend.Data.EquipmentDTO;
 import com.gatepass.backend.Data.RequestorDTO;
+import com.gatepass.backend.Data.RequestorEquipmentViewDTO;
 import com.gatepass.backend.Model.Equipments;
 import com.gatepass.backend.Model.Gatepass;
 import com.gatepass.backend.Model.Requestors;
@@ -26,6 +28,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/api")
@@ -40,8 +43,8 @@ public class GatepassController {
 
     @PostMapping("/submit")
     public ResponseEntity<?> submitJson(@RequestBody RequestorDTO form) {
-        if (form.getEquipmentItems() == null) {
-            return ResponseEntity.badRequest().body("equipmentItems is required");
+        if (form.getEquipment() == null) {
+            return ResponseEntity.badRequest().body("equipment is required");
         }
 
         Requestors requestor = new Requestors();
@@ -63,7 +66,7 @@ public class GatepassController {
         final Requestors savedRequestor = requestor;
         final Gatepass savedGatepass = gatepass;
 
-        var items = form.equipmentItems.stream().map(itemDto -> {
+        var items = form.getEquipment().stream().map(itemDto -> {
             Equipments item = new Equipments();
             item.setEquipmentName(itemDto.equipmentName);
             item.setQuantity(itemDto.quantity);
@@ -91,8 +94,10 @@ public class GatepassController {
     }
 
     @GetMapping("/requestors")
-    public ResponseEntity<List<Requestors>> getAllRequestors() {
-        List<Requestors> requestors = requestorRepo.findAll();
+    public ResponseEntity<List<RequestorEquipmentViewDTO>> getAllRequestors() {
+        List<RequestorEquipmentViewDTO> requestors = requestorRepo.findAll().stream()
+                .map(this::toRequestorEquipmentView)
+                .collect(Collectors.toList());
         return ResponseEntity.ok(requestors);
     }
 
@@ -150,5 +155,38 @@ public class GatepassController {
         gatepassRepo.save(gatepass);
 
         return ResponseEntity.ok("Items returned");
+    }
+
+    private RequestorEquipmentViewDTO toRequestorEquipmentView(Requestors requestor) {
+        RequestorEquipmentViewDTO dto = new RequestorEquipmentViewDTO();
+        dto.setId(requestor.getId());
+        dto.setName(requestor.getName());
+        dto.setDestination(requestor.getDestination());
+        dto.setPeriod(requestor.getPeriod());
+
+        List<EquipmentDTO> equipment = requestor.getEquipment() == null ? List.of()
+                : requestor.getEquipment().stream()
+                        .map(this::toEquipmentDto)
+                        .collect(Collectors.toList());
+        dto.setEquipment(equipment);
+        return dto;
+    }
+
+    private EquipmentDTO toEquipmentDto(Equipments equipment) {
+        EquipmentDTO dto = new EquipmentDTO();
+        dto.setId(equipment.getId());
+        dto.setEquipmentName(equipment.getEquipmentName());
+        dto.setQuantity(equipment.getQuantity());
+        dto.setEquipmentCode(equipment.getEquipmentCode());
+
+        Gatepass gatepass = equipment.getGatepass();
+        if (gatepass != null) {
+            dto.setReleased(gatepass.isReleased());
+            dto.setReturned(gatepass.isReturned());
+            dto.setReleasedAt(gatepass.getReleasedAt());
+            dto.setReturnedAt(gatepass.getReturnedAt());
+        }
+
+        return dto;
     }
 }

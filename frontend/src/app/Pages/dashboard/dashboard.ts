@@ -96,8 +96,8 @@ export class Dashboard implements OnInit {
                 requestorName: requestor.name,
                 destination: requestor.destination,
                 period: requestor.period,
-                released: requestor.gatepass?.released || false,
-                returned: requestor.gatepass?.returned || false,
+                released: eq.releasedAt ? true : false,
+                returned: eq.returnedAt ? true : false,
                 releasedAt: eq.releasedAt ? new Date(eq.releasedAt) : null,
                 returnedAt: eq.returnedAt ? new Date(eq.returnedAt) : null
               });
