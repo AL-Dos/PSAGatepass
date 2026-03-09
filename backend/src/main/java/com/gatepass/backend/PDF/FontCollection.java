@@ -25,4 +25,8 @@ public class FontCollection {
     public static Font getGuard() {
         return FontFactory.getFont("Arial", 12, Font.ITALIC);
     }
+
+    public static Font getLogsFont() {
+        return FontFactory.getFont("Arial", 12, Font.NORMAL);
+    }
 }
