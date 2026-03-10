@@ -25,4 +25,11 @@ export class EquipmentService {
       withCredentials: true
     });
   }
+
+  exportLogs(equipmentIds: number[]) {
+    return this.http.post(`${this.apiUrl}/logs/export`, { equipmentIds }, {
+      withCredentials: true,
+      responseType: 'blob'
+    });
+  }
 }

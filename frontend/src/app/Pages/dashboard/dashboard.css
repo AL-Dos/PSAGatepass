@@ -75,6 +75,19 @@ body {
   margin-bottom: 2rem;
 }
 
+/* Actions Bar */
+.actions-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.selection-count {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+}
+
 /* Search Bar */
 .search-bar {
   flex: 1;
@@ -198,6 +211,12 @@ th.mat-header-cell {
   border-bottom: 2px solid var(--border-color);
   white-space: nowrap;
   font-family: 'Space Mono', monospace;
+}
+
+th.mat-header-cell:first-child,
+td.mat-cell:first-child {
+  width: 48px;
+  text-align: center;
 }
 
 /* Data Cells */

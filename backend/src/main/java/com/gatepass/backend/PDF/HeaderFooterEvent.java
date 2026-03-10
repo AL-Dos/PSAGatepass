@@ -15,6 +15,9 @@ import org.springframework.core.io.ClassPathResource;
 public class HeaderFooterEvent extends PdfPageEventHelper {
     private static final String HEADER_IMAGE_PATH = "templates/Header.png";
     private static final String FOOTER_IMAGE_PATH = "templates/Footer.png";
+    // Adjust these max dimensions to change header/footer image size without stretching.
+    private static final float HEADER_MAX_HEIGHT = 60f;
+    private static final float FOOTER_MAX_HEIGHT = 45f;
 
     private final Image headerImage;
     private final Image footerImage;
@@ -40,8 +43,11 @@ public class HeaderFooterEvent extends PdfPageEventHelper {
 
         try {
             Image header = Image.getInstance(headerImage);
-            header.scaleAbsolute(pageSize.getWidth(), 60f);
-            header.setAbsolutePosition(pageSize.getLeft(), pageSize.getTop() - header.getScaledHeight());
+            // Keep aspect ratio; fit within page width and max header height.
+            header.scaleToFit(pageSize.getWidth(), HEADER_MAX_HEIGHT);
+            float x = pageSize.getLeft() + (pageSize.getWidth() - header.getScaledWidth()) / 2f;
+            float y = pageSize.getTop() - header.getScaledHeight();
+            header.setAbsolutePosition(x, y);
             canvas.addImage(header);
         } catch (DocumentException exception) {
             throw new IllegalStateException("Failed to draw PDF header image", exception);
@@ -55,8 +61,11 @@ public class HeaderFooterEvent extends PdfPageEventHelper {
 
         try {
             Image footer = Image.getInstance(footerImage);
-            footer.scaleAbsolute(pageSize.getWidth(), 45f);
-            footer.setAbsolutePosition(pageSize.getLeft(), pageSize.getBottom());
+            // Keep aspect ratio; fit within page width and max footer height.
+            footer.scaleToFit(pageSize.getWidth(), FOOTER_MAX_HEIGHT);
+            float x = pageSize.getLeft() + (pageSize.getWidth() - footer.getScaledWidth()) / 2f;
+            float y = pageSize.getBottom();
+            footer.setAbsolutePosition(x, y);
             canvas.addImage(footer);
         } catch (DocumentException exception) {
             throw new IllegalStateException("Failed to draw PDF footer image", exception);

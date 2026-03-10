@@ -1,6 +1,8 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit, ViewChild } from '@angular/core';
+import { SelectionModel } from '@angular/cdk/collections';
 import { MatButtonModule } from '@angular/material/button';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatIconModule } from '@angular/material/icon';
@@ -15,6 +17,7 @@ export const DASHBOARD_TABLE_COLUMNS = [CommonModule,
     MatSortModule,
     MatPaginatorModule,
     MatButtonModule,
+    MatCheckboxModule,
     MatIconModule,
     MatInputModule,
     MatDatepickerModule,
@@ -43,7 +46,9 @@ interface EquipmentData {
 })
 export class Dashboard implements OnInit {
   dataSource = new MatTableDataSource<EquipmentData>();
-  displayedColumns: string[] = ['id', 'equip', 'quan', 'pNum', 'dest', 'pCover', 'req', 'released', 'returned'];
+  displayedColumns: string[] = ['select', 'id', 'equip', 'quan', 'pNum', 'dest', 'pCover', 'req', 'released', 'returned'];
+  selection = new SelectionModel<EquipmentData>(true, []);
+  isExporting = false;
 
   @ViewChild(MatSort) sort!: MatSort;
   @ViewChild(MatPaginator) paginator!: MatPaginator;
@@ -108,6 +113,7 @@ export class Dashboard implements OnInit {
         this.dataSource.data = equipmentData;
         this.dataSource.sort = this.sort;
         this.dataSource.paginator = this.paginator;
+        this.selection.clear();
       },
       error: (err) => {
         console.error('Error loading equipment:', err);
@@ -134,5 +140,45 @@ export class Dashboard implements OnInit {
 
   getPendingCount(): number {
     return this.dataSource.data.filter(item => !item.released).length;
+  }
+
+  isAllSelected(): boolean {
+    const numSelected = this.selection.selected.length;
+    const numRows = this.dataSource.data.length;
+    return numSelected === numRows && numRows > 0;
+  }
+
+  masterToggle(): void {
+    if (this.isAllSelected()) {
+      this.selection.clear();
+      return;
+    }
+    this.selection.select(...this.dataSource.data);
+  }
+
+  exportLogs(): void {
+    const ids = this.selection.selected.map(item => item.id);
+    this.isExporting = true;
+    this.equipmentService.exportLogs(ids).subscribe({
+      next: (response: Blob) => {
+        const url = window.URL.createObjectURL(response);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'transmittal.pdf';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
+        this.isExporting = false;
+      },
+      error: (err) => {
+        console.error('Error exporting logs:', err);
+        this.isExporting = false;
+      }
+    });
+  }
+
+  clearSelection(): void {
+    this.selection.clear();
   }
 }
