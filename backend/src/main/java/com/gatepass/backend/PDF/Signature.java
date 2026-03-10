@@ -25,9 +25,9 @@ public class Signature {
         labelCell1.setBorder(Rectangle.NO_BORDER);
         requestedTable.addCell(labelCell1);
 
-        PdfPCell signatureCell1 = new PdfPCell();
-        signatureCell1.setBorder(Rectangle.BOTTOM);
-        requestedTable.addCell(signatureCell1);
+        PdfPCell employeeCell = new PdfPCell(); // Employee or Requestor goes here
+        employeeCell.setBorder(Rectangle.BOTTOM);
+        requestedTable.addCell(employeeCell);
 
         PdfPCell blankCell1 = new PdfPCell();
         blankCell1.setBorder(Rectangle.NO_BORDER);
@@ -43,7 +43,7 @@ public class Signature {
         blankCell2.setBorder(Rectangle.NO_BORDER);
         Designation1.addCell(blankCell2);
 
-        PdfPCell designationCell1 = new PdfPCell(new Paragraph("Designation:  ", signatureFont));
+        PdfPCell designationCell1 = new PdfPCell(new Paragraph("PSA Employee", signatureFont));
         designationCell1.setBorder(Rectangle.NO_BORDER);
         Designation1.addCell(designationCell1);
 
@@ -65,9 +65,11 @@ public class Signature {
         labelCell2.setBorder(Rectangle.NO_BORDER);
         approvedTable.addCell(labelCell2);
 
-        PdfPCell signatureCell2 = new PdfPCell();
-        signatureCell2.setBorder(Rectangle.BOTTOM);
-        approvedTable.addCell(signatureCell2);
+        PdfPCell bossCell = new PdfPCell(new Paragraph("Jessie A. Madulin", signatureeFont));
+        bossCell.setBorder(Rectangle.BOTTOM);
+        bossCell.setHorizontalAlignment(PdfPCell.ALIGN_LEFT);
+        bossCell.setVerticalAlignment(PdfPCell.ALIGN_MIDDLE);
+        approvedTable.addCell(bossCell);
 
         PdfPCell blankCell4 = new PdfPCell();
         blankCell4.setBorder(Rectangle.NO_BORDER);
@@ -83,7 +85,7 @@ public class Signature {
         blankCell5.setBorder(Rectangle.NO_BORDER);
         Designation2.addCell(blankCell5);
 
-        PdfPCell designationCell2 = new PdfPCell(new Paragraph("Designation:  ", signatureFont));
+        PdfPCell designationCell2 = new PdfPCell(new Paragraph("Chief Statistical Specialist", signatureFont));
         designationCell2.setBorder(Rectangle.NO_BORDER);
         Designation2.addCell(designationCell2);
 
@@ -95,7 +97,7 @@ public class Signature {
         docs.add(Designation2);
 
         // Guard on Duty
-        Paragraph guardSign = new Paragraph("______________________________________", signatureeFont);
+        Paragraph guardSign = new Paragraph("______________________", signatureeFont);
         guardSign.setSpacingBefore(20f);
         guardSign.setSpacingAfter(0);
         guardSign.setAlignment(Paragraph.ALIGN_RIGHT);

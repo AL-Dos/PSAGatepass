@@ -21,8 +21,6 @@ public class DateLetter {
         // Gatepass
         PdfPTable headerTable = new PdfPTable(2);
         headerTable.setWidthPercentage(100);
-        headerTable.setSpacingBefore(5f);
-        headerTable.setSpacingAfter(5f);
         headerTable.setWidths(new float[] {3f, 1f});
         headerTable.getDefaultCell().setBorder(Rectangle.NO_BORDER);
 
@@ -32,42 +30,51 @@ public class DateLetter {
 
         PdfPCell gatepassCell = new PdfPCell(new Paragraph("GATEPASS", gatepass));
         gatepassCell.setBorder(Rectangle.BOX);
+        gatepassCell.setVerticalAlignment(PdfPCell.ALIGN_MIDDLE);
         gatepassCell.setHorizontalAlignment(PdfPCell.ALIGN_CENTER);
         headerTable.addCell(gatepassCell);
 
         docs.add(headerTable);
 
         // Date and Control No.
-        PdfPTable controDateTable = new PdfPTable(3);
-        controDateTable.setWidthPercentage(100);
-        controDateTable.setSpacingAfter(5f);
-        controDateTable.setWidths(new float[] {1f, 2f, 3f});
+        PdfPTable controlTable = new PdfPTable(3);
+        controlTable.setWidthPercentage(100);
+        controlTable.setSpacingAfter(5f);
+        controlTable.setWidths(new float[] {1f, 1.3f, 3.5f});
 
-        PdfPCell controlLabelCell = new PdfPCell(new Paragraph("Control No.:   ", headerFont));
+        PdfPCell controlLabelCell = new PdfPCell(new Paragraph("Control No.:", headerFont));
         controlLabelCell.setBorder(Rectangle.NO_BORDER);
-        controDateTable.addCell(controlLabelCell);
+        controlTable.addCell(controlLabelCell);
 
         PdfPCell controlValueCell = new PdfPCell();
         controlValueCell.setBorder(Rectangle.BOTTOM);
-        controDateTable.addCell(controlValueCell);
+        controlTable.addCell(controlValueCell);
 
         PdfPCell blankControlCell = new PdfPCell();
         blankControlCell.setBorder(Rectangle.NO_BORDER);
-        controDateTable.addCell(blankControlCell);
+        controlTable.addCell(blankControlCell);
 
-        PdfPCell dateLabelCell = new PdfPCell(new Paragraph("Date:   ", headerFont));
+        PdfPTable dateTable = new PdfPTable(3);
+        dateTable.setWidthPercentage(100);
+        dateTable.setSpacingBefore(5f);
+        dateTable.setWidths(new float[] {1f, 1.3f, 3.5f});
+
+        PdfPCell dateLabelCell = new PdfPCell(new Paragraph("Date:", headerFont));
         dateLabelCell.setBorder(Rectangle.NO_BORDER);
-        controDateTable.addCell(dateLabelCell);
+        dateTable.addCell(dateLabelCell);
 
         PdfPCell dateValueCell = new PdfPCell(new Paragraph(formattedDate, headerFont));
+        dateValueCell.setVerticalAlignment(PdfPCell.ALIGN_MIDDLE);
+        dateValueCell.setHorizontalAlignment(PdfPCell.ALIGN_CENTER);
         dateValueCell.setBorder(Rectangle.BOTTOM);
-        controDateTable.addCell(dateValueCell);
+        dateTable.addCell(dateValueCell);
 
         PdfPCell blankDateCell = new PdfPCell();
         blankDateCell.setBorder(Rectangle.NO_BORDER);
-        controDateTable.addCell(blankDateCell);
+        dateTable.addCell(blankDateCell);
 
-        docs.add(controDateTable);
+        docs.add(controlTable);
+        docs.add(dateTable);
 
         // Letter
         Paragraph letterEntry = new Paragraph("TO THE GUARD ON DUTY:", headerFont);
@@ -76,6 +83,7 @@ public class DateLetter {
 
         Paragraph letter = new Paragraph("Please allow ____________________________________ to bring out the property/equipment listed below from PSA Davao del Norte to their assigned locations for the purposes of _________________________________________ on ____________________________.", headerFont);
         letter.setSpacingBefore(10f);
+        letter.setSpacingAfter(10f);
         letter.setAlignment(Paragraph.ALIGN_JUSTIFIED);
         docs.add(letter);
     }

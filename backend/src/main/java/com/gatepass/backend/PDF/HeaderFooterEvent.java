@@ -16,8 +16,8 @@ public class HeaderFooterEvent extends PdfPageEventHelper {
     private static final String HEADER_IMAGE_PATH = "templates/Header.png";
     private static final String FOOTER_IMAGE_PATH = "templates/Footer.png";
     // Adjust these max dimensions to change header/footer image size without stretching.
-    private static final float HEADER_MAX_HEIGHT = 60f;
-    private static final float FOOTER_MAX_HEIGHT = 45f;
+    private static final float HEADER_MAX_HEIGHT = 65f;
+    private static final float FOOTER_MAX_HEIGHT = 60f;
 
     private final Image headerImage;
     private final Image footerImage;

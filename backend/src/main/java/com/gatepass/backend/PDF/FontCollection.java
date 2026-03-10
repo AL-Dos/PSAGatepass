@@ -7,7 +7,7 @@ public class FontCollection {
     private FontCollection() {}
 
     public static Font getGatepassFont() {
-        return FontFactory.getFont("Arial", 14, Font.BOLD);
+        return FontFactory.getFont("Arial", 18, Font.BOLD);
     }
 
     public static Font getHeaderFont() {
@@ -15,11 +15,11 @@ public class FontCollection {
     }
 
     public static Font getSignatureFont() {
-        return FontFactory.getFont("Arial", 12, Font.ITALIC);
+        return FontFactory.getFont("Arial", 12, Font.NORMAL);
     }
 
     public static Font getSignaturee() {
-        return FontFactory.getFont("Arial", 12, Font.BOLD);
+        return FontFactory.getFont("Arial", 14, Font.BOLD);
     }
 
     public static Font getGuard() {
