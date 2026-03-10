@@ -19,7 +19,7 @@ public class FontCollection {
     }
 
     public static Font getSignaturee() {
-        return FontFactory.getFont("Arial", 14, Font.BOLD);
+        return FontFactory.getFont("Arial", 12, Font.BOLD);
     }
 
     public static Font getGuard() {

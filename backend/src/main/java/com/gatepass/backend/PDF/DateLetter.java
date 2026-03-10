@@ -32,6 +32,11 @@ public class DateLetter {
         gatepassCell.setBorder(Rectangle.BOX);
         gatepassCell.setVerticalAlignment(PdfPCell.ALIGN_MIDDLE);
         gatepassCell.setHorizontalAlignment(PdfPCell.ALIGN_CENTER);
+        // Adjust this height if you want the "GATEPASS" box taller/shorter.
+        gatepassCell.setFixedHeight(24f);
+        // Adjust padding to fine-tune vertical centering inside the box.
+        gatepassCell.setPaddingTop(0f);
+        gatepassCell.setPaddingBottom(4f);
         headerTable.addCell(gatepassCell);
 
         docs.add(headerTable);

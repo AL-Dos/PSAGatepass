@@ -18,7 +18,7 @@ import com.gatepass.backend.Model.Equipments;
 
 @Service
 public class TransmittalService {
-    public byte[] exportLogsPdf(List<Equipments> equipments, String auditorName) {
+    public byte[] exportLogsPdf(List<Equipments> equipments) {
         try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
             Document document = new Document(PageSize.A4, 36f, 36f, 72f, 54f);
             PdfWriter writer = PdfWriter.getInstance(document, outputStream);
@@ -27,7 +27,7 @@ public class TransmittalService {
             document.open();
             document.add(new Paragraph(" "));
             new DateLetter().buildHeaderLetter(LocalDate.now(), document);
-            new TableLogs().getTableLogs(document, equipments, auditorName);
+            new TableLogs().getTableLogs(document, equipments);
             new Signature().buildSignature(document);
             document.close();
 

@@ -14,16 +14,15 @@ import com.gatepass.backend.Model.Equipments;
 import com.gatepass.backend.Model.Requestors;
 
 public class TableLogs {
-    public void getTableLogs(Document docs, List<Equipments> equipments, String auditorName) throws DocumentException{
+    public void getTableLogs(Document docs, List<Equipments> equipments) throws DocumentException{
         Font logsFont = FontCollection.getLogsFont();
-        String safeAuditorName = (auditorName == null || auditorName.isBlank()) ? "Unknown Auditor" : auditorName;
 
         // Table header
         PdfPTable headerCell = new PdfPTable(5);
         headerCell.setWidthPercentage(100);
         headerCell.setSpacingBefore(10f);
         headerCell.setSpacingAfter(0f);
-        headerCell.setWidths(new float[] {1f, 1.5f, 1.5f, 1.5f, 1.5f});
+        headerCell.setWidths(new float[] {1f, 3f, 3f, 3f, 3f});
         headerCell.getDefaultCell().setBorder(PdfPCell.BOX);
 
         PdfPCell blankCell = new PdfPCell();
@@ -62,17 +61,19 @@ public class TableLogs {
         bodyTable.setWidthPercentage(100);
         bodyTable.setSpacingBefore(0f);
         bodyTable.setSpacingAfter(0f);
-        bodyTable.setWidths(new float[] {1f, 2f, 2f, 2f, 2f});
+        bodyTable.setWidths(new float[] {1f, 3f, 3f, 3f, 3f});
         bodyTable.getDefaultCell().setBorder(PdfPCell.BOX);
 
         int index = 1;
         for (Equipments equipment : equipments) {
             Requestors requestor = equipment.getRequestor();
+            String requestorName = requestor == null ? "" : requestor.getName();
             String destinationValue = requestor == null ? "" : requestor.getDestination();
             String periodValue = requestor == null ? "" : requestor.getPeriod();
 
-            bodyTable.addCell(buildCell(index + " " + safeAuditorName, logsFont, PdfPCell.ALIGN_CENTER));
-            bodyTable.addCell(buildCell(safeAuditorName + " " + equipment.getEquipmentName() + " " + equipment.getQuantity(), logsFont, PdfPCell.ALIGN_LEFT));
+            String descriptionText = requestorName + "\n" + equipment.getQuantity() + " " + equipment.getEquipmentName();
+            bodyTable.addCell(buildCell(String.valueOf(index), logsFont, PdfPCell.ALIGN_CENTER));
+            bodyTable.addCell(buildCell(descriptionText, logsFont, PdfPCell.ALIGN_LEFT));
             bodyTable.addCell(buildCell(equipment.getEquipmentCode(), logsFont, PdfPCell.ALIGN_CENTER));
             bodyTable.addCell(buildCell(destinationValue, logsFont, PdfPCell.ALIGN_CENTER));
             bodyTable.addCell(buildCell(periodValue, logsFont, PdfPCell.ALIGN_CENTER));
