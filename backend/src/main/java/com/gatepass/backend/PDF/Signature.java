@@ -17,7 +17,7 @@ public class Signature {
         // Requested by
         PdfPTable requestedTable = new PdfPTable(3);
         requestedTable.setWidthPercentage(100);
-        requestedTable.setSpacingBefore(20f);
+        requestedTable.setSpacingBefore(40f);
         requestedTable.setSpacingAfter(0);
         requestedTable.setWidths(new float[] {1f, 2f, 2.5f});
 
@@ -43,7 +43,7 @@ public class Signature {
         blankCell2.setBorder(Rectangle.NO_BORDER);
         Designation1.addCell(blankCell2);
 
-        PdfPCell designationCell1 = new PdfPCell(new Paragraph("PSA Employee", signatureFont));
+        PdfPCell designationCell1 = new PdfPCell(new Paragraph("PSA Borrower", signatureFont));
         designationCell1.setBorder(Rectangle.NO_BORDER);
         Designation1.addCell(designationCell1);
 
@@ -54,26 +54,26 @@ public class Signature {
         docs.add(requestedTable);
         docs.add(Designation1);
 
-        // Approved by
-        PdfPTable approvedTable = new PdfPTable(3);
-        approvedTable.setWidthPercentage(100);
-        approvedTable.setSpacingBefore(10f);
-        approvedTable.setSpacingAfter(0);
-        approvedTable.setWidths(new float[] {1f, 2f, 2.5f});
+        // Noted by
+        PdfPTable notedTable = new PdfPTable(3);
+        notedTable.setWidthPercentage(100);
+        notedTable.setSpacingBefore(20f);
+        notedTable.setSpacingAfter(0);
+        notedTable.setWidths(new float[] {1f, 2f, 2.5f});
 
-        PdfPCell labelCell2 = new PdfPCell(new Paragraph("Approved by:  ", signatureFont));
+        PdfPCell labelCell2 = new PdfPCell(new Paragraph("Noted by:  ", signatureFont));
         labelCell2.setBorder(Rectangle.NO_BORDER);
-        approvedTable.addCell(labelCell2);
+        notedTable.addCell(labelCell2);
 
-        PdfPCell bossCell = new PdfPCell(new Paragraph("Jessie A. Madulin", signatureeFont));
-        bossCell.setBorder(Rectangle.BOTTOM);
-        bossCell.setHorizontalAlignment(PdfPCell.ALIGN_LEFT);
-        bossCell.setVerticalAlignment(PdfPCell.ALIGN_MIDDLE);
-        approvedTable.addCell(bossCell);
+        PdfPCell custodianCell = new PdfPCell(new Paragraph("Beecham M. Concon", signatureeFont));
+        custodianCell.setBorder(Rectangle.BOTTOM);
+        custodianCell.setHorizontalAlignment(PdfPCell.ALIGN_LEFT);
+        custodianCell.setVerticalAlignment(PdfPCell.ALIGN_MIDDLE);
+        notedTable.addCell(custodianCell);
 
         PdfPCell blankCell4 = new PdfPCell();
         blankCell4.setBorder(Rectangle.NO_BORDER);
-        approvedTable.addCell(blankCell4);
+        notedTable.addCell(blankCell4);
 
         PdfPTable Designation2 = new PdfPTable(3);
         Designation2.setWidthPercentage(100);
@@ -81,20 +81,62 @@ public class Signature {
         Designation2.setSpacingAfter(20f);
         Designation2.setWidths(new float[] {1f, 2f, 2.5f});
 
-        PdfPCell blankCell5 = new PdfPCell();
-        blankCell5.setBorder(Rectangle.NO_BORDER);
-        Designation2.addCell(blankCell5);
-
-        PdfPCell designationCell2 = new PdfPCell(new Paragraph("Chief Statistical Specialist", signatureFont));
-        designationCell2.setBorder(Rectangle.NO_BORDER);
-        Designation2.addCell(designationCell2);
-
         PdfPCell blankCell6 = new PdfPCell();
         blankCell6.setBorder(Rectangle.NO_BORDER);
         Designation2.addCell(blankCell6);
 
-        docs.add(approvedTable);
+        PdfPCell designationCell2 = new PdfPCell(new Paragraph("Property Custodian", signatureFont));
+        designationCell2.setBorder(Rectangle.NO_BORDER);
+        Designation2.addCell(designationCell2);
+
+        PdfPCell blankCell7 = new PdfPCell();
+        blankCell7.setBorder(Rectangle.NO_BORDER);
+        Designation2.addCell(blankCell7);
+
+        docs.add(notedTable);
         docs.add(Designation2);
+
+        // Approved by
+        PdfPTable approvedTable = new PdfPTable(3);
+        approvedTable.setWidthPercentage(100);
+        approvedTable.setSpacingBefore(20f);
+        approvedTable.setSpacingAfter(0);
+        approvedTable.setWidths(new float[] {1f, 2f, 2.5f});
+
+        PdfPCell labelCell3 = new PdfPCell(new Paragraph("Approved by:  ", signatureFont));
+        labelCell3.setBorder(Rectangle.NO_BORDER);
+        approvedTable.addCell(labelCell3);
+
+        PdfPCell bossCell = new PdfPCell(new Paragraph("Jessie A. Madulin", signatureeFont));
+        bossCell.setBorder(Rectangle.BOTTOM);
+        bossCell.setHorizontalAlignment(PdfPCell.ALIGN_LEFT);
+        bossCell.setVerticalAlignment(PdfPCell.ALIGN_MIDDLE);
+        approvedTable.addCell(bossCell);
+
+        PdfPCell blankCell5 = new PdfPCell();
+        blankCell5.setBorder(Rectangle.NO_BORDER);
+        approvedTable.addCell(blankCell5);
+
+        PdfPTable Designation3 = new PdfPTable(3);
+        Designation3.setWidthPercentage(100);
+        Designation3.setSpacingBefore(0f);
+        Designation3.setSpacingAfter(20f);
+        Designation3.setWidths(new float[] {1f, 2f, 2.5f});
+
+        PdfPCell blankCell8 = new PdfPCell();
+        blankCell8.setBorder(Rectangle.NO_BORDER);
+        Designation3.addCell(blankCell8);
+
+        PdfPCell designationCell3 = new PdfPCell(new Paragraph("Chief Statistical Specialist", signatureFont));
+        designationCell3.setBorder(Rectangle.NO_BORDER);
+        Designation3.addCell(designationCell3);
+
+        PdfPCell blankCell9 = new PdfPCell();
+        blankCell9.setBorder(Rectangle.NO_BORDER);
+        Designation3.addCell(blankCell9);
+
+        docs.add(approvedTable);
+        docs.add(Designation3);
 
         // Guard on Duty
         Paragraph guardSign = new Paragraph("______________________", signatureeFont);

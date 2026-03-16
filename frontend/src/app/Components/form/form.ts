@@ -69,24 +69,28 @@ export class Form {
     };
 
     // Filter out empty equipment items
-    const filteredModel = {
-      ...this.model,
-      equipmentItems: this.model.equipmentItems.filter(item =>
-        item.equipmentName.trim() !== '' &&
-        item.equipmentCode.trim() !== '' &&
-        item.quantity > 0
-      )
-    };
+    const filteredEquipment = this.model.equipmentItems.filter(item =>
+      item.equipmentName.trim() !== '' &&
+      item.equipmentCode.trim() !== '' &&
+      item.quantity > 0
+    );
 
     // Prevent submission if no valid equipment items
-    if (filteredModel.equipmentItems.length === 0) {
+    if (filteredEquipment.length === 0) {
       console.warn('Please add at least one valid equipment item');
       return;
     }
 
+    const payload = {
+      name: this.model.name,
+      destination: this.model.destination,
+      period: this.model.period,
+      equipment: filteredEquipment
+    };
+
     // Use same-origin API path so it works in dev (proxy) and prod (nginx)
     const baseUrl = `/api/submit`;
-    this.http.post(baseUrl, filteredModel, { responseType: 'blob' })
+    this.http.post(baseUrl, payload, { responseType: 'blob' })
       .subscribe({
         next: (response: Blob) => {
           this.showSuccess = true;
