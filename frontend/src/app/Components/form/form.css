@@ -1,21 +1,14 @@
 .request-form {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding-top: 70px;
-  gap: 1rem;
+  display: block;
   font-family: "Iansui", cursive;
   color: white;
 }
 
-mat-card {
-  width: 900px;
+.section {
+  width: 100%;
+  max-width: 900px;
+  margin: 0 auto;
   text-align: center;
-  background-color: rgba(1, 28, 77);
-  border-radius: 12px;
-  border-color: black;
-  box-shadow: 1px 4px 24px rgba(22, 22, 22, 0.815);
-  padding: 1.5rem;
 }
 
 mat-form-field {
@@ -24,8 +17,7 @@ mat-form-field {
   flex: 1;
 }
 
-mat-card-header {
-  height: 45px;
+.section-header {
   margin-bottom: 30px;
   font-size: clamp(1rem, 2vw, 1.4rem);
 }

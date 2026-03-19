@@ -25,9 +25,12 @@ public class TableLogs {
         headerCell.setWidths(new float[] {1f, 3f, 3f, 3f, 3f});
         headerCell.getDefaultCell().setBorder(PdfPCell.BOX);
 
-        PdfPCell blankCell = new PdfPCell();
-        blankCell.setBorder(PdfPCell.BOX);
-        headerCell.addCell(blankCell);
+        PdfPCell numberCell = new PdfPCell();
+        numberCell.setPhrase(new Phrase("No.", logsFont));
+        numberCell.setHorizontalAlignment(PdfPCell.ALIGN_CENTER);
+        numberCell.setBorder(PdfPCell.BOX);
+        numberCell.setVerticalAlignment(PdfPCell.ALIGN_MIDDLE);
+        headerCell.addCell(numberCell);
 
         PdfPCell description = new PdfPCell();
         description.setPhrase(new Phrase("Description of Property/Equipment", logsFont));

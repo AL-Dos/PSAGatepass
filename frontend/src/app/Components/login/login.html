@@ -1,10 +1,10 @@
 <div class="login-wrapper">
   <div class="login-left">
-      <mat-card>
-          <mat-card-header>
+      <div class="section">
+          <div class="section-header">
               <h2>Login Admin</h2>
-          </mat-card-header>
-          <mat-card-content>
+          </div>
+          <div class="section-content">
               <form #loginForm="ngForm" (ngSubmit)="login()">
                   <mat-form-field>
                       <mat-label>Name</mat-label>
@@ -38,7 +38,7 @@
                   }
                   <button mat-raised-button color="primary" type="submit">Login</button>
               </form>
-          </mat-card-content>
-      </mat-card>
+          </div>
+      </div>
   </div>
 </div>
