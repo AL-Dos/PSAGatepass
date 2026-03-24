@@ -22,7 +22,7 @@ mat-form-field{
 
 .section-header {
   margin-bottom: 30px;
-  font-size: clamp(1rem, 2vw, 1.4rem);
+  font-size: clamp(1rem, 2vw, 1.7rem);
 }
 
 .boxPasswordCheck {

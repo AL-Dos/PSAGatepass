@@ -34,3 +34,101 @@ html {
   background: #667eea;
   color: white;
 }
+
+/* Paginator Override */
+.mat-mdc-paginator,
+.mat-mdc-paginator .mat-mdc-select-value,
+.mat-mdc-paginator .mat-mdc-select-arrow,
+.mat-mdc-paginator-range-label,
+.mat-mdc-paginator-page-size-label {
+  font-family: 'DM Sans', sans-serif;
+  background-color: transparent !important;
+  color: rgba(255, 255, 255, 0.9) !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+/* 1. Dropdown text */
+.mat-mdc-paginator .mat-mdc-select-min-line,
+.mat-mdc-paginator .mdc-list-item__primary-text {
+  color: rgba(255, 255, 255, 0.8) !important;
+}
+
+/* 2. Active Arrows */
+.mat-mdc-paginator .mat-mdc-icon-button svg,
+.mat-mdc-paginator .mat-mdc-icon-button mat-icon {
+  color: rgba(255, 255, 255, 0.8) !important;
+  fill: rgba(255, 255, 255, 0.8) !important;
+}
+
+/* 3. Inactive Arrows */
+.mat-mdc-paginator .mat-mdc-icon-button[disabled] svg,
+.mat-mdc-paginator .mat-mdc-icon-button[disabled] mat-icon {
+  color: rgba(255, 255, 255, 0.25) !important;
+  fill: rgba(255, 255, 255, 0.25) !important;
+}
+
+/* 4. Hovered Arrows */
+.mat-mdc-paginator .mat-mdc-icon-button .mat-ripple-element {
+  background: rgba(255, 255, 255, 0.815) !important;
+}
+.mat-mdc-paginator .mat-mdc-icon-button:hover {
+  background: rgb(255, 255, 255) !important;
+}
+
+/* 5. Page Size Select Box Outline */
+.mat-mdc-paginator .mdc-notched-outline__leading,
+.mat-mdc-paginator .mdc-notched-outline__notch,
+.mat-mdc-paginator .mdc-notched-outline__trailing {
+  border-color: rgba(255, 255, 255, 0.603) !important;
+}
+
+/* Search Bar Override */
+/* 1.Floating label "Search" text */
+.search-bar .mat-mdc-floating-label,
+.search-bar .mdc-floating-label
+.search-bar mat-icon,
+.search-bar .mat-mdc-form-field mat-icon{
+  color: rgba(255, 255, 255, 0.897) !important;
+}
+
+/* 2. Outline border */
+.search-bar .mdc-notched-outline__leading,
+.search-bar .mdc-notched-outline__notch,
+.search-bar .mdc-notched-outline__trailing {
+  border-color: rgba(255, 255, 255, 0.2) !important;
+}
+
+/* 3. Outline border on hover */
+.search-bar:hover .mdc-notched-outline__leading,
+.search-bar:hover .mdc-notched-outline__notch,
+.search-bar:hover .mdc-notched-outline__trailing {
+  border-color: rgba(255, 255, 255, 0.45) !important;
+}
+
+/* 4. Outline border on focus */
+.search-bar .mat-mdc-form-field.mat-focused .mdc-notched-outline__leading,
+.search-bar .mat-mdc-form-field.mat-focused .mdc-notched-outline__notch,
+.search-bar .mat-mdc-form-field.mat-focused .mdc-notched-outline__trailing {
+  border-color: #667eea !important;
+}
+
+/* 5.Search bar background — darker so white text is visible */
+.search-bar .mat-mdc-text-field-wrapper {
+  background: rgba(255, 255, 255, 0.014) !important;
+}
+
+.search-bar .mat-mdc-text-field-wrapper:focus-within {
+  background: rgba(255, 255, 255, 0.075) !important;
+  box-shadow: 0 0 0 2px var(--accent-glow);
+}
+
+/* 6. Input text & placeholder */
+.search-bar .mat-mdc-input-element {
+  color: rgba(255, 255, 255, 0.9) !important;
+  caret-color: #667eea;
+}
+
+.search-bar .mat-mdc-input-element::placeholder {
+  color: rgba(255, 255, 255, 0.4) !important;
+}

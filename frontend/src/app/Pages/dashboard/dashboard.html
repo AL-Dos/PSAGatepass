@@ -33,7 +33,7 @@
         <button mat-raised-button color="primary" (click)="exportLogs()" [disabled]="isExporting || dataSource.data.length === 0">
           Export PDF
         </button>
-        <button mat-stroked-button (click)="clearSelection()" [disabled]="selection.selected.length === 0">
+        <button mat-raised-button color="primary" (click)="clearSelection()" [disabled]="selection.selected.length === 0">
           Clear selection
         </button>
         <span class="selection-count">{{ selection.selected.length }} selected</span>
