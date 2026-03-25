@@ -49,31 +49,36 @@ html {
 }
 
 /* 1. Dropdown text */
-.mat-mdc-paginator .mat-mdc-select-min-line,
 .mat-mdc-paginator .mdc-list-item__primary-text {
-  color: rgba(255, 255, 255, 0.8) !important;
+  color: rgb(0, 0, 0) !important;
+}
+
+.mat-mdc-paginator .mat-mdc-select-min-line {
+  color: rgb(253, 253, 253) !important;
 }
 
 /* 2. Active Arrows */
 .mat-mdc-paginator .mat-mdc-icon-button svg,
 .mat-mdc-paginator .mat-mdc-icon-button mat-icon {
-  color: rgba(255, 255, 255, 0.8) !important;
-  fill: rgba(255, 255, 255, 0.8) !important;
+  color: rgba(0, 0, 0, 0.959) !important;
+  fill: rgba(255, 255, 255, 0.726) !important;
 }
 
 /* 3. Inactive Arrows */
 .mat-mdc-paginator .mat-mdc-icon-button[disabled] svg,
 .mat-mdc-paginator .mat-mdc-icon-button[disabled] mat-icon {
-  color: rgba(255, 255, 255, 0.25) !important;
-  fill: rgba(255, 255, 255, 0.25) !important;
+  color: rgb(0, 0, 0) !important;
+  fill: rgb(245, 245, 245) !important;
 }
 
 /* 4. Hovered Arrows */
-.mat-mdc-paginator .mat-mdc-icon-button .mat-ripple-element {
-  background: rgba(255, 255, 255, 0.815) !important;
+.mat-mdc-paginator .mat-mdc-icon-button .mat-ripple-element
+.mat-mdc-paginator .mat-mdc-icon-button:hover{
+  background: rgb(0, 0, 0) !important;
 }
-.mat-mdc-paginator .mat-mdc-icon-button:hover {
-  background: rgb(255, 255, 255) !important;
+
+.mat-mdc-paginator .mat-mdc-icon-button .mat-ripple-element {
+  background: rgb(230, 230, 230) !important;
 }
 
 /* 5. Page Size Select Box Outline */
