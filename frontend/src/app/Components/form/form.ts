@@ -7,18 +7,22 @@ import { MatDialogModule } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { AutofocusDirective } from '../../Directive/autofocus.directive';
 
 @Component({
   selector: 'app-form',
-  imports: [FormsModule, MatCardModule, MatIconModule, MatButtonModule, MatInputModule, MatFormFieldModule, MatDialogModule, AutofocusDirective,],
+  imports: [FormsModule, MatCardModule, MatIconModule, MatButtonModule, MatInputModule, MatFormFieldModule, MatDialogModule, MatSnackBarModule, AutofocusDirective,],
   templateUrl: './form.html',
   styleUrl: './form.css',
 })
 export class Form {
   showSuccess = false;
 
-  constructor(private http: HttpClient) {}
+  constructor(
+    private http: HttpClient,
+    private snackBar: MatSnackBar
+  ) {}
 
   model = {
     name: '',
@@ -92,19 +96,14 @@ export class Form {
     const baseUrl = `/api/submit`;
     this.http.post(baseUrl, payload, { responseType: 'blob' })
       .subscribe({
-        next: (response: Blob) => {
+        next: () => {
           this.showSuccess = true;
           setTimeout(() => this.showSuccess = false, 6000);
-
-          // Trigger download
-          const url = window.URL.createObjectURL(response);
-          const a = document.createElement('a');
-          a.href = url;
-          a.download = 'gatepass.pdf';
-          document.body.appendChild(a);
-          a.click();
-          document.body.removeChild(a);
-          window.URL.revokeObjectURL(url);
+          this.snackBar.open('Request saved successfully.', 'OK', {
+            duration: 4000,
+            horizontalPosition: 'right',
+            verticalPosition: 'top'
+          });
         },
         error: (err) => console.error(err)
       });
