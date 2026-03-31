@@ -70,13 +70,12 @@ public class TableLogs {
         int index = 1;
         for (Equipments equipment : equipments) {
             Requestors requestor = equipment.getRequestor();
-            String requestorName = requestor == null ? "" : requestor.getName();
             String destinationValue = requestor == null ? "" : requestor.getDestination();
             String periodValue = requestor == null ? "" : requestor.getPeriod();
 
-            String descriptionText = requestorName + "\n" + equipment.getQuantity() + " " + equipment.getEquipmentName();
+            String descriptionText = equipment.getQuantity() + " " + equipment.getEquipmentName();
             bodyTable.addCell(buildCell(String.valueOf(index), logsFont, PdfPCell.ALIGN_CENTER));
-            bodyTable.addCell(buildCell(descriptionText, logsFont, PdfPCell.ALIGN_LEFT));
+            bodyTable.addCell(buildCell(descriptionText, logsFont, PdfPCell.ALIGN_CENTER));
             bodyTable.addCell(buildCell(equipment.getEquipmentCode(), logsFont, PdfPCell.ALIGN_CENTER));
             bodyTable.addCell(buildCell(destinationValue, logsFont, PdfPCell.ALIGN_CENTER));
             bodyTable.addCell(buildCell(periodValue, logsFont, PdfPCell.ALIGN_CENTER));
