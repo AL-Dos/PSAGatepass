@@ -24,7 +24,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
 import java.awt.image.BufferedImage;
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
+import java.time.ZoneId;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -131,7 +132,7 @@ public class GatepassController {
         }
 
         gatepass.setReleased(true);
-        gatepass.setReleasedAt(LocalDateTime.now());
+        gatepass.setReleasedAt(OffsetDateTime.now(ZoneId.of("Asia/Manila")));
         gatepassRepo.save(gatepass);
 
         return ResponseEntity.ok("Items released");
@@ -151,7 +152,7 @@ public class GatepassController {
         }
 
         gatepass.setReturned(true);
-        gatepass.setReturnedAt(LocalDateTime.now());
+        gatepass.setReturnedAt(OffsetDateTime.now(ZoneId.of("Asia/Manila")));
         gatepassRepo.save(gatepass);
 
         return ResponseEntity.ok("Items returned");

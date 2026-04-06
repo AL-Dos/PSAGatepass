@@ -1,5 +1,7 @@
 package com.gatepass.backend.Controller;
 
+import java.time.OffsetDateTime;
+import java.time.ZoneId;
 import java.util.Map;
 
 import org.springframework.http.HttpStatus;
@@ -98,11 +100,11 @@ public class GuardController {
 
         if (!gatepass.isReleased()) {
             gatepass.setReleased(true);
-            gatepass.setReleasedAt(java.time.LocalDateTime.now());
+            gatepass.setReleasedAt(OffsetDateTime.now(ZoneId.of("Asia/Manila")));
             action = "Released";
         } else if (!gatepass.isReturned()) {
             gatepass.setReturned(true);
-            gatepass.setReturnedAt(java.time.LocalDateTime.now());
+            gatepass.setReturnedAt(OffsetDateTime.now(ZoneId.of("Asia/Manila")));
             action = "Returned";
         } else {
             return ResponseEntity.badRequest().body("Gatepass already completed (Returned)");

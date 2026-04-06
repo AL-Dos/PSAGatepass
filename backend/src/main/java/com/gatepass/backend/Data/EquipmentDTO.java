@@ -1,6 +1,6 @@
 package com.gatepass.backend.Data;
 
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 
 import lombok.Data;
 
@@ -13,6 +13,6 @@ public class EquipmentDTO {
 
     private boolean released;
     private boolean returned;
-    private LocalDateTime releasedAt;
-    private LocalDateTime returnedAt;
+    private OffsetDateTime releasedAt;
+    private OffsetDateTime returnedAt;
 }

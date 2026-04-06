@@ -1,6 +1,6 @@
 package com.gatepass.backend.Data;
 
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 
 import lombok.Data;
 import lombok.Getter;
@@ -14,6 +14,6 @@ public class GatepassDTO {
     private String qrToken;
     private boolean released;
     private boolean returned;
-    private LocalDateTime releasedAt;
-    private LocalDateTime returnedAt;
+    private OffsetDateTime releasedAt;
+    private OffsetDateTime returnedAt;
 }

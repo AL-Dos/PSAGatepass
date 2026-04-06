@@ -1,6 +1,6 @@
 package com.gatepass.backend.Model;
 
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
@@ -36,9 +36,9 @@ public class Gatepass {
     private boolean returned = false;
 
     @Column(name = "released_at")
-    private LocalDateTime releasedAt;
+    private OffsetDateTime releasedAt;
     @Column(name = "returned_at")
-    private LocalDateTime returnedAt;
+    private OffsetDateTime returnedAt;
 
     @ManyToOne
     @JoinColumn(name = "requestor_id", nullable = false)
