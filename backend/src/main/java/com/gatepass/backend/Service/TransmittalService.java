@@ -30,10 +30,10 @@ public class TransmittalService {
 
             document.open();
             document.add(new Paragraph(" "));
-            new DateLetter().buildHeaderLetter(LocalDate.now(), document);
+            Requestors requestor = getRequestor(equipments);
+            new DateLetter().buildHeaderLetter(LocalDate.now(), document, requestor, null);
             new TableLogs().getTableLogs(document, equipments);
             BufferedImage qrImage = buildGatepassQr(equipments);
-            Requestors requestor = getRequestor(equipments);
             new Signature().buildSignature(document, qrImage, requestor);
             document.close();
 

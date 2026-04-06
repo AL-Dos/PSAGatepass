@@ -11,11 +11,12 @@ import org.openpdf.text.Rectangle;
 import org.openpdf.text.pdf.PdfPCell;
 import org.openpdf.text.pdf.PdfPTable;
 
+import com.gatepass.backend.Model.Requestors;
+
 public class DateLetter {
-    public void buildHeaderLetter(LocalDate date, Document docs) throws DocumentException {
+    public void buildHeaderLetter(LocalDate date, Document docs, Requestors requestor, String purpose) throws DocumentException {
         Font gatepass = FontCollection.getGatepassFont();
         Font headerFont = FontCollection.getHeaderFont();
-        
         String formattedDate = date.format(DateTimeFormatter.ofPattern("dd MMMM yyyy"));
 
         // Gatepass
@@ -86,10 +87,25 @@ public class DateLetter {
         letterEntry.setSpacingBefore(15f);
         docs.add(letterEntry);
 
-        Paragraph letter = new Paragraph("Please allow ____________________________________ to bring out the property/equipment listed below from PSA Davao del Norte to their assigned locations for the purposes of _________________________________________ on ____________________________.", headerFont);
+        String requestorName = displayOrBlank(requestor == null ? null : requestor.getName(), 34);
+        String requestPeriod = displayOrBlank(requestor == null ? null : requestor.getPeriod(), 26);
+        String requestPurpose = displayOrBlank(purpose, 39);
+
+        String letterText = "Please allow " + requestorName + " to bring out the "
+                + "property/equipment listed below from PSA Davao del Norte to their "
+                + "assigned locations for the purposes of " + requestPurpose + " on "
+                + requestPeriod + ".";
+        Paragraph letter = new Paragraph(letterText, headerFont);
         letter.setSpacingBefore(10f);
         letter.setSpacingAfter(10f);
         letter.setAlignment(Paragraph.ALIGN_JUSTIFIED);
         docs.add(letter);
+    }
+
+    private String displayOrBlank(String value, int minUnderscores) {
+        if (value == null || value.trim().isEmpty()) {
+            return "_".repeat(minUnderscores);
+        }
+        return value.trim();
     }
 }

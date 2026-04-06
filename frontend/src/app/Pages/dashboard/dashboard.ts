@@ -1,30 +1,32 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { SelectionModel } from '@angular/cdk/collections';
+import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
-import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatPaginatorModule, MatPaginator } from '@angular/material/paginator';
+import { MatSelectModule } from '@angular/material/select';
 import { MatSortModule, MatSort } from '@angular/material/sort';
 import { MatTableModule, MatTableDataSource } from '@angular/material/table';
 import { EquipmentService } from '../../Services/equipment/equipment.service';
 
 export const DASHBOARD_TABLE_COLUMNS = [CommonModule,
+    FormsModule,
     MatTableModule,
     MatSortModule,
     MatPaginatorModule,
     MatButtonModule,
-    MatCheckboxModule,
     MatIconModule,
     MatInputModule,
     MatDatepickerModule,
-    MatNativeDateModule] as const;
+    MatNativeDateModule,
+    MatSelectModule] as const;
 
 interface EquipmentData {
   id: number;
+  requestorId: number;
   equipmentName: string;
   quantity: number;
   equipmentCode: string;
@@ -46,9 +48,10 @@ interface EquipmentData {
 })
 export class Dashboard implements OnInit {
   dataSource = new MatTableDataSource<EquipmentData>();
-  displayedColumns: string[] = ['select', 'id', 'equip', 'quan', 'pNum', 'dest', 'pCover', 'req', 'released', 'returned'];
-  selection = new SelectionModel<EquipmentData>(true, []);
+  displayedColumns: string[] = ['id', 'equip', 'quan', 'pNum', 'dest', 'pCover', 'req', 'released', 'returned'];
   isExporting = false;
+  requestorOptions: Array<{ id: number; name: string }> = [];
+  selectedRequestorId: number | null = null;
 
   @ViewChild(MatSort) sort!: MatSort;
   @ViewChild(MatPaginator) paginator!: MatPaginator;
@@ -88,13 +91,16 @@ export class Dashboard implements OnInit {
     this.equipmentService.getAllEquipment().subscribe({
       next: (requestors: any[]) => {
         const equipmentData: EquipmentData[] = [];
+        const requestorOptions: Array<{ id: number; name: string }> = [];
 
         // Flatten the nested equipment from each requestor
         requestors.forEach(requestor => {
           if (requestor.equipment && Array.isArray(requestor.equipment)) {
+            requestorOptions.push({ id: requestor.id, name: requestor.name });
             requestor.equipment.forEach((eq: any) => {
               equipmentData.push({
                 id: eq.id,
+                requestorId: requestor.id,
                 equipmentName: eq.equipmentName,
                 quantity: eq.quantity,
                 equipmentCode: eq.equipmentCode,
@@ -113,7 +119,10 @@ export class Dashboard implements OnInit {
         this.dataSource.data = equipmentData;
         this.dataSource.sort = this.sort;
         this.dataSource.paginator = this.paginator;
-        this.selection.clear();
+        this.requestorOptions = requestorOptions.sort((a, b) => a.name.localeCompare(b.name));
+        if (this.requestorOptions.length === 0) {
+          this.selectedRequestorId = null;
+        }
       },
       error: (err) => {
         console.error('Error loading equipment:', err);
@@ -142,22 +151,12 @@ export class Dashboard implements OnInit {
     return this.dataSource.data.filter(item => !item.released).length;
   }
 
-  isAllSelected(): boolean {
-    const numSelected = this.selection.selected.length;
-    const numRows = this.dataSource.data.length;
-    return numSelected === numRows && numRows > 0;
-  }
-
-  masterToggle(): void {
-    if (this.isAllSelected()) {
-      this.selection.clear();
-      return;
-    }
-    this.selection.select(...this.dataSource.data);
-  }
-
   exportLogs(): void {
-    const ids = this.selection.selected.map(item => item.id);
+    if (this.selectedRequestorId === null) return;
+    const ids = this.dataSource.data
+      .filter(item => item.requestorId === this.selectedRequestorId)
+      .map(item => item.id);
+    if (ids.length === 0) return;
     this.isExporting = true;
     this.equipmentService.exportLogs(ids).subscribe({
       next: (response: Blob) => {
@@ -176,9 +175,5 @@ export class Dashboard implements OnInit {
         this.isExporting = false;
       }
     });
-  }
-
-  clearSelection(): void {
-    this.selection.clear();
   }
 }
