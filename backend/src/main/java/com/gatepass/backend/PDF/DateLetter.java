@@ -8,6 +8,7 @@ import org.openpdf.text.DocumentException;
 import org.openpdf.text.Font;
 import org.openpdf.text.Paragraph;
 import org.openpdf.text.Rectangle;
+import org.openpdf.text.Chunk;
 import org.openpdf.text.pdf.PdfPCell;
 import org.openpdf.text.pdf.PdfPTable;
 
@@ -91,11 +92,21 @@ public class DateLetter {
         String requestPeriod = displayOrBlank(requestor == null ? null : requestor.getPeriod(), 26);
         String requestPurpose = displayOrBlank(requestor == null ? null : requestor.getPurpose(), 39);
 
-        String letterText = "Please allow " + requestorName + " to bring out the "
-                + "property/equipment listed below from PSA Davao del Norte to their "
-                + "assigned locations for the purposes of " + requestPurpose + " on "
-                + requestPeriod + ".";
-        Paragraph letter = new Paragraph(letterText, headerFont);
+        Paragraph letter = new Paragraph();
+        letter.add(new Chunk("Please allow ", headerFont));
+        Chunk requestorChunk = new Chunk(requestorName, headerFont);
+        requestorChunk.setUnderline(0.1f, -2f);
+        letter.add(requestorChunk);
+        letter.add(new Chunk(" to bring out the property/equipment listed below from PSA Davao del Norte to their ", headerFont));
+        letter.add(new Chunk("assigned locations for the purposes of ", headerFont));
+        Chunk purposeChunk = new Chunk(requestPurpose, headerFont);
+        purposeChunk.setUnderline(0.1f, -2f);
+        letter.add(purposeChunk);
+        letter.add(new Chunk(" on ", headerFont));
+        Chunk periodChunk = new Chunk(requestPeriod, headerFont);
+        periodChunk.setUnderline(0.1f, -2f);
+        letter.add(periodChunk);
+        letter.add(new Chunk(".", headerFont));
         letter.setSpacingBefore(10f);
         letter.setSpacingAfter(10f);
         letter.setAlignment(Paragraph.ALIGN_JUSTIFIED);
