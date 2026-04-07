@@ -50,6 +50,20 @@
           <mat-icon matSuffix>calendar_today</mat-icon>
         </mat-form-field>
 
+        <!-- Purpose -->
+        <mat-form-field>
+          <mat-label>Purpose</mat-label>
+          <input
+            matInput
+            name="purpose"
+            [(ngModel)]="model.purpose"
+            required
+            #eqCode="ngModel"
+            appAutofocusInvalid
+          />
+          <mat-icon matSuffix>calendar_today</mat-icon>
+        </mat-form-field>
+
         <h3 style="margin-top: 20px;">Equipment List</h3>
 
         <!-- EQUIPMENT REPEATING ROWS -->

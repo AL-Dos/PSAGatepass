@@ -11,6 +11,7 @@ export interface Equipment {
     name: string;
     destination: string;
     period: string;
+    purpose: string;
   };
 }
 

@@ -28,6 +28,7 @@ export class Form {
     name: '',
     destination: '',
     period: '',
+    purpose: '',
     equipmentItems: [
       { equipmentName: '', quantity: 0, equipmentCode: '' }
     ]
@@ -89,6 +90,7 @@ export class Form {
       name: this.model.name,
       destination: this.model.destination,
       period: this.model.period,
+      purpose: this.model.purpose,
       equipment: filteredEquipment
     };
 

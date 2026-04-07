@@ -44,7 +44,22 @@ public class GatepassController {
 
     @PostMapping("/submit")
     public ResponseEntity<?> submitJson(@RequestBody RequestorDTO form) {
-        if (form.getEquipment() == null) {
+        if (form == null) {
+            return ResponseEntity.badRequest().body("request body is required");
+        }
+        if (form.name == null || form.name.trim().isEmpty()) {
+            return ResponseEntity.badRequest().body("name is required");
+        }
+        if (form.destination == null || form.destination.trim().isEmpty()) {
+            return ResponseEntity.badRequest().body("destination is required");
+        }
+        if (form.period == null || form.period.trim().isEmpty()) {
+            return ResponseEntity.badRequest().body("period is required");
+        }
+        if (form.purpose == null || form.purpose.trim().isEmpty()) {
+            return ResponseEntity.badRequest().body("purpose is required");
+        }
+        if (form.getEquipment() == null || form.getEquipment().isEmpty()) {
             return ResponseEntity.badRequest().body("equipment is required");
         }
 
@@ -52,6 +67,7 @@ public class GatepassController {
         requestor.setName(form.name);
         requestor.setDestination(form.destination);
         requestor.setPeriod(form.period);
+        requestor.setPurpose(form.purpose);
 
         // Save Requestor first to generate ID
         requestor = requestorRepo.save(requestor);

@@ -30,6 +30,8 @@ public class Requestors {
     private String destination;
     @Column(name = "period", nullable = false)
     private String period;
+    @Column(name = "purpose", nullable = false)
+    private String purpose;
 
     @OneToMany(mappedBy = "requestor", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference

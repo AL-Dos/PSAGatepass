@@ -14,7 +14,7 @@ import org.openpdf.text.pdf.PdfPTable;
 import com.gatepass.backend.Model.Requestors;
 
 public class DateLetter {
-    public void buildHeaderLetter(LocalDate date, Document docs, Requestors requestor, String purpose) throws DocumentException {
+    public void buildHeaderLetter(LocalDate date, Document docs, Requestors requestor, Requestors purpose) throws DocumentException {
         Font gatepass = FontCollection.getGatepassFont();
         Font headerFont = FontCollection.getHeaderFont();
         String formattedDate = date.format(DateTimeFormatter.ofPattern("dd MMMM yyyy"));
@@ -89,7 +89,7 @@ public class DateLetter {
 
         String requestorName = displayOrBlank(requestor == null ? null : requestor.getName(), 34);
         String requestPeriod = displayOrBlank(requestor == null ? null : requestor.getPeriod(), 26);
-        String requestPurpose = displayOrBlank(purpose, 39);
+        String requestPurpose = displayOrBlank(requestor == null ? null : requestor.getPurpose(), 39);
 
         String letterText = "Please allow " + requestorName + " to bring out the "
                 + "property/equipment listed below from PSA Davao del Norte to their "
