@@ -35,7 +35,7 @@ html {
   color: white;
 }
 
-/* Paginator Override */
+/*----- Paginator Override -----*/
 .mat-mdc-paginator,
 .mat-mdc-paginator .mat-mdc-select-value,
 .mat-mdc-paginator .mat-mdc-select-arrow,
@@ -88,7 +88,7 @@ html {
   border-color: rgba(255, 255, 255, 0.603) !important;
 }
 
-/* Search Bar Override */
+/*-----Search Bar Override -----*/
 /* 1.Floating label "Search" text */
 .search-bar .mat-mdc-floating-label,
 .search-bar .mdc-floating-label
@@ -136,4 +136,33 @@ html {
 
 .search-bar .mat-mdc-input-element::placeholder {
   color: rgba(255, 255, 255, 0.4) !important;
+}
+
+/* ----- Actions Bar -----*/
+.actions-bar {
+  display: flex;
+  gap: 2rem;
+  align-items: middle;
+  margin-top: 0.5rem;
+  font-family: 'DM Sans', sans-serif;
+}
+
+.actions-bar .actions-select,
+.actions-bar .actions-select .mat-mdc-select-value,
+.actions-bar .actions-select .mat-mdc-select-arrow,
+.actions-bar .actions-select .mat-mdc-floating-label {
+  font-family: 'DM Sans', sans-serif;
+  color: rgba(255, 255, 255, 0.9) !important;
+}
+
+.actions-bar .actions-select:hover .mdc-notched-outline__leading,
+.actions-bar .actions-select:hover .mdc-notched-outline__notch,
+.actions-bar .actions-select:hover .mdc-notched-outline__trailing {
+  border-color: rgba(255, 255, 255, 0.75) !important;
+}
+
+.actions-bar .actions-select.mat-focused .mdc-notched-outline__leading,
+.actions-bar .actions-select.mat-focused .mdc-notched-outline__notch,
+.actions-bar .actions-select.mat-focused .mdc-notched-outline__trailing {
+  border-color: #667eea !important;
 }
