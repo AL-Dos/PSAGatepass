@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -69,25 +70,20 @@ public class GuardController {
     }
 
     @PostMapping("/scan")
-    public ResponseEntity<?> scan(@RequestBody com.gatepass.backend.Data.ScanRequestDTO dto) {
-        if (dto.getQrToken() == null || dto.getPin() == null) {
-            return ResponseEntity.badRequest().body("Missing QR Token or PIN");
+    public ResponseEntity<?> scan(@RequestBody com.gatepass.backend.Data.ScanRequestDTO dto, Authentication authentication) {
+        if (dto.getQrToken() == null) {
+            return ResponseEntity.badRequest().body("Missing QR Token");
         }
 
-        // Validate PIN against any active guard (In production, maybe bind to logged in
-        // guard)
-        // For this specific request "inputs his special code", we verify if ANY active
-        // guard owns this PIN.
-        Guard verifiedGuard = null;
-        for (Guard g : guardRepo.findAll()) {
-            if (g.isActive() && encoder.matches(dto.getPin(), g.getPinHash())) {
-                verifiedGuard = g;
-                break;
-            }
+        if (authentication == null || !authentication.isAuthenticated()) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized");
         }
 
-        if (verifiedGuard == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid Security PIN");
+        Guard verifiedGuard = guardRepo.findByName(authentication.getName())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED));
+
+        if (!verifiedGuard.isActive()) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Inactive guard");
         }
 
         com.gatepass.backend.Model.Gatepass gatepass = gatepassRepo.findByQrToken(dto.getQrToken());

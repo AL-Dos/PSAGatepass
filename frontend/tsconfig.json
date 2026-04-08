@@ -12,7 +12,10 @@
     "isolatedModules": true,
     "experimentalDecorators": true,
     "importHelpers": true,
-    "target": "ES2022",
+    "removeComments": true,
+    "noEmitOnError": true,
+    "sourceMap": true,
+    "target": "es2022",
     "module": "preserve"
   },
   "angularCompilerOptions": {

@@ -185,6 +185,20 @@
   margin-top: 20px;
 }
 
+.guard-session {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 12px 14px;
+  margin-bottom: 16px;
+  font-size: 14px;
+  color: #334155;
+}
+
 /* ===================================
    RESULT BOX
    =================================== */

@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit, signal, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnDestroy, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
@@ -27,7 +27,10 @@ import { GuardService } from '../../Services/guard/guard.service';
 export class GuardScan implements OnInit, OnDestroy {
   scanner: Html5QrcodeScanner | null = null;
   scannedToken = signal<string | null>(null);
-  pin = signal<string>('');
+  guardName = signal<string>('');
+  guardPin = signal<string>('');
+  isLoggedIn = signal<boolean>(false);
+  loginLoading = signal<boolean>(false);
   loading = signal<boolean>(false);
   result = signal<any>(null);
   cameraFacing = signal<'environment' | 'user'>('environment');
@@ -39,11 +42,16 @@ export class GuardScan implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    // Initialize scanner after view init logic if needed, but here simple init
-    this.startScanner();
+    const token = this.guardService.getToken();
+    if (token) {
+      this.isLoggedIn.set(true);
+      this.guardName.set(this.guardService.getName() || '');
+      this.startScanner();
+    }
   }
 
   startScanner() {
+    if (!this.isLoggedIn()) return;
     // Timeout to ensure DOM is ready if needed
     setTimeout(() => {
       // Clear existing scanner if present
@@ -68,6 +76,13 @@ export class GuardScan implements OnInit, OnDestroy {
       );
       this.scanner.render(this.onScanSuccess.bind(this), this.onScanFailure.bind(this));
     }, 120);
+  }
+
+  stopScanner() {
+    if (this.scanner) {
+      this.scanner.clear().catch(() => {});
+      this.scanner = null;
+    }
   }
 
   toggleCamera() {
@@ -104,18 +119,46 @@ export class GuardScan implements OnInit, OnDestroy {
 
   resetScan() {
     this.scannedToken.set(null);
-    this.pin.set('');
     this.result.set(null);
     this.startScanner();
   }
 
-  submitPin() {
-    if (!this.scannedToken() || !this.pin()) return;
+  loginGuard() {
+    if (!this.guardName().trim() || !this.guardPin().trim()) return;
+    this.loginLoading.set(true);
+    this.guardService.login(this.guardName().trim(), this.guardPin().trim()).subscribe({
+      next: (res) => {
+        this.loginLoading.set(false);
+        this.guardService.saveSession(this.guardName().trim(), res.token);
+        this.guardPin.set('');
+        this.isLoggedIn.set(true);
+        this.startScanner();
+        this.snackBar.open('Guard authenticated', 'Close', { duration: 3000 });
+      },
+      error: (err) => {
+        this.loginLoading.set(false);
+        const msg = err.error || err.message || 'Login failed';
+        this.snackBar.open(msg, 'Close', { duration: 5000 });
+      }
+    });
+  }
+
+  logoutGuard() {
+    this.guardService.clearSession();
+    this.isLoggedIn.set(false);
+    this.scannedToken.set(null);
+    this.result.set(null);
+    this.guardPin.set('');
+    this.stopScanner();
+    this.snackBar.open('Signed out', 'Close', { duration: 3000 });
+  }
+
+  submitScan() {
+    if (!this.scannedToken()) return;
 
     this.loading.set(true);
     this.guardService.scan({
-      qrToken: this.scannedToken()!,
-      pin: this.pin()
+      qrToken: this.scannedToken()!
     }).subscribe({
       next: (res) => {
         this.loading.set(false);
@@ -125,6 +168,9 @@ export class GuardScan implements OnInit, OnDestroy {
       error: (err) => {
         this.loading.set(false);
         console.error(err);
+        if (err.status === 401 || err.status === 403) {
+          this.logoutGuard();
+        }
         const msg = err.error || err.message || 'Error occurred';
         this.snackBar.open(msg, 'Close', { duration: 5000 });
       }
@@ -132,8 +178,6 @@ export class GuardScan implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    if (this.scanner) {
-      this.scanner.clear().catch(err => console.error("Failed to clear scanner", err));
-    }
+    this.stopScanner();
   }
 }

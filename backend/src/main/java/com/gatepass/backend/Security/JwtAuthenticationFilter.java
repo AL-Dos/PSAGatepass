@@ -77,8 +77,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter{
         }
 
         // Public endpoints that should not be filtered by the JWT filter
-        if (path.equals("/api/login") || path.equals("/api/submit") || path.startsWith("/api/verify")
-                || path.equals("/api/guard/login") || path.equals("/api/guard/scan") || path.startsWith("/actuator")) {
+        if (path.equals("/api/login") || path.equals("/api/submit") || path.equals("/api/guard/login")
+                || (path.startsWith("/api/verify") && method.equalsIgnoreCase("GET"))
+                || path.startsWith("/actuator")) {
             return true;
         }
 

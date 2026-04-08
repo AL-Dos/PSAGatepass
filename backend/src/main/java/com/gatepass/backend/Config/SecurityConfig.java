@@ -16,12 +16,10 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.http.HttpMethod;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-import org.springframework.web.filter.CorsFilter;
-import org.springframework.boot.web.servlet.FilterRegistrationBean;
+import org.springframework.http.HttpMethod;
 
 import com.gatepass.backend.Security.JwtAuthenticationFilter;
 
@@ -57,9 +55,12 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/verify/**").permitAll()
                         .requestMatchers("/actuator/health", "/actuator/info", "/api/submit", "/api/login", "/api/me",
-                            "/api/verify/**", "/api/guard/scan", "/api/guard/login")
+                            "/api/guard/login")
                         .permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/verify/**").hasAnyRole("GUARD", "ADMIN")
+                        .requestMatchers("/api/guard/scan").hasRole("GUARD")
                         .requestMatchers("/api/list/**").hasRole("ADMIN")
                         .requestMatchers("/api/logout").authenticated()
                         .anyRequest().authenticated())
@@ -80,29 +81,6 @@ public class SecurityConfig {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", config);
         return source;
-    }
-
-    @Bean
-    public FilterRegistrationBean<CorsFilter> corsFilterRegistration() {
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(resolveAllowedOrigins());
-        config.setAllowedOriginPatterns(resolveAllowedOrigins());
-        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-        config.setAllowedHeaders(List.of("*"));
-        config.setAllowCredentials(true);
-        source.registerCorsConfiguration("/**", config);
-
-        FilterRegistrationBean<CorsFilter> bean = new FilterRegistrationBean<>(new CorsFilter(source));
-        bean.setOrder(0);
-        return bean;
-    }
-
-    @Bean
-    public FilterRegistrationBean<SimpleCorsFilter> simpleCorsFilterRegistration() {
-        FilterRegistrationBean<SimpleCorsFilter> reg = new FilterRegistrationBean<>(new SimpleCorsFilter());
-        reg.setOrder(org.springframework.core.Ordered.HIGHEST_PRECEDENCE);
-        return reg;
     }
 
     private List<String> resolveAllowedOrigins() {
