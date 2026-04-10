@@ -3,6 +3,7 @@ package com.gatepass.backend.Controller;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.util.Map;
+import org.springframework.beans.factory.annotation.Value;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -30,16 +31,19 @@ public class GuardController {
     private final PasswordEncoder encoder;
     private final JwtUtil jwtUtil;
     private final GatepassRepository gatepassRepo;
+    private final ZoneId storageZone;
 
     public GuardController(
             GuardRepository guardRepo,
             PasswordEncoder encoder,
             JwtUtil jwtUtil,
-            GatepassRepository gatepassRepo) {
+            GatepassRepository gatepassRepo,
+            @Value("${app.timezone.storage:UTC}") String storageTimezone) {
         this.guardRepo = guardRepo;
         this.encoder = encoder;
         this.jwtUtil = jwtUtil;
         this.gatepassRepo = gatepassRepo;
+        this.storageZone = ZoneId.of(storageTimezone);
     }
 
     @PostMapping("/login")
@@ -96,11 +100,11 @@ public class GuardController {
 
         if (!gatepass.isReleased()) {
             gatepass.setReleased(true);
-            gatepass.setReleasedAt(OffsetDateTime.now(ZoneId.of("Asia/Manila")));
+            gatepass.setReleasedAt(OffsetDateTime.now(storageZone));
             action = "Released";
         } else if (!gatepass.isReturned()) {
             gatepass.setReturned(true);
-            gatepass.setReturnedAt(OffsetDateTime.now(ZoneId.of("Asia/Manila")));
+            gatepass.setReturnedAt(OffsetDateTime.now(storageZone));
             action = "Returned";
         } else {
             return ResponseEntity.badRequest().body("Gatepass already completed (Returned)");

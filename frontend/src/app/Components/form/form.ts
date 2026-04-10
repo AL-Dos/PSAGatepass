@@ -98,10 +98,22 @@ export class Form {
     const baseUrl = `/api/submit`;
     this.http.post(baseUrl, payload, { responseType: 'blob' })
       .subscribe({
-        next: () => {
+        next: (response: Blob) => {
+          const blob = new Blob([response], { type: 'application/pdf' });
+          const url = window.URL.createObjectURL(blob);
+          const link = document.createElement('a');
+          link.href = url;
+          link.download = 'gatepass.pdf';
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+          window.open(url, '_blank');
+
+          setTimeout(() => window.URL.revokeObjectURL(url), 1000);
+
           this.showSuccess = true;
           setTimeout(() => this.showSuccess = false, 6000);
-          this.snackBar.open('Request saved successfully.', 'OK', {
+          this.snackBar.open('Request saved successfully. Download started.', 'OK', {
             duration: 4000,
             horizontalPosition: 'right',
             verticalPosition: 'top'

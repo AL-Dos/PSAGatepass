@@ -100,7 +100,7 @@ export class GuardScan implements OnInit, OnDestroy {
   onScanSuccess(decodedText: string, decodedResult: any) {
     console.log(`Code matched = ${decodedText}`, decodedResult);
     // Extract token if it's a URL or just the token.
-    // Backend generates "http://localhost:4200/verify/" + gatepass.getQrToken()
+    // Backend generates a verification URL like "http://localhost:8080/api/verify/" + gatepass.getQrToken()
     // We need the token part.
     let token = decodedText;
     if (decodedText.includes('/verify/')) {

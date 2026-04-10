@@ -18,5 +18,20 @@
     "name": "cors.allowed-origins",
     "type": "java.lang.String",
     "description": "A description for 'cors.allowed-origins'"
+  },
+  {
+    "name": "app.qr.verify-base-url",
+    "type": "java.lang.String",
+    "description": "A description for 'app.qr.verify-base-url'"
+  },
+  {
+    "name": "app.timezone.storage",
+    "type": "java.lang.String",
+    "description": "A description for 'app.timezone.storage'"
+  },
+  {
+    "name": "app.timezone.display",
+    "type": "java.lang.String",
+    "description": "A description for 'app.timezone.display'"
   }
 ]}

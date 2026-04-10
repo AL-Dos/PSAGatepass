@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,10 +23,15 @@ public class GatepassService {
 
     private final RequestorRepository requestorRepo;
     private final GatepassRepository gatepassRepo;
+    private final String verifyBaseUrl;
 
-    public GatepassService(RequestorRepository requestorRepo, GatepassRepository gatepassRepo) {
+    public GatepassService(
+            RequestorRepository requestorRepo,
+            GatepassRepository gatepassRepo,
+            @Value("${app.qr.verify-base-url:http://localhost:8080/api/verify/}") String verifyBaseUrl) {
         this.requestorRepo = requestorRepo;
         this.gatepassRepo = gatepassRepo;
+        this.verifyBaseUrl = verifyBaseUrl.endsWith("/") ? verifyBaseUrl : verifyBaseUrl + "/";
     }
 
     @Transactional
@@ -62,7 +68,7 @@ public class GatepassService {
         // Save Requestor again to cascade save Equipments
         requestorRepo.save(savedRequestor);
 
-        String qrUrl = "http://localhost:4200/verify/" + gatepass.getQrToken();
+        String qrUrl = verifyBaseUrl + savedGatepass.getQrToken();
         BufferedImage qrImage = QrCodeUtil.generateQr(qrUrl, 300);
         byte[] pdf = GatepassUtil.createMultiItemPdf(qrImage, items);
         return pdf;

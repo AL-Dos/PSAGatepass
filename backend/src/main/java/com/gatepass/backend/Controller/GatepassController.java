@@ -17,6 +17,7 @@ import com.gatepass.backend.Repository.GatepassRepository;
 import com.gatepass.backend.Repository.RequestorRepository;
 import com.gatepass.backend.Service.GatepassService;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -36,11 +37,20 @@ public class GatepassController {
     private final RequestorRepository requestorRepo;
     private final GatepassRepository gatepassRepo;
     private final GatepassService gatepassService;
+    private final ZoneId storageZone;
+    private final ZoneId displayZone;
 
-    public GatepassController(RequestorRepository requestorRepo, GatepassRepository gatepassRepo, GatepassService gatepassService) {
+    public GatepassController(
+            RequestorRepository requestorRepo,
+            GatepassRepository gatepassRepo,
+            GatepassService gatepassService,
+            @Value("${app.timezone.storage:UTC}") String storageTimezone,
+            @Value("${app.timezone.display:Asia/Manila}") String displayTimezone) {
         this.requestorRepo = requestorRepo;
         this.gatepassRepo = gatepassRepo;
         this.gatepassService = gatepassService;
+        this.storageZone = ZoneId.of(storageTimezone);
+        this.displayZone = ZoneId.of(displayTimezone);
     }
 
     @PostMapping("/submit")
@@ -98,7 +108,7 @@ public class GatepassController {
         }
 
         gatepass.setReleased(true);
-        gatepass.setReleasedAt(OffsetDateTime.now(ZoneId.of("Asia/Manila")));
+        gatepass.setReleasedAt(OffsetDateTime.now(storageZone));
         gatepassRepo.save(gatepass);
 
         return ResponseEntity.ok("Items released");
@@ -118,7 +128,7 @@ public class GatepassController {
         }
 
         gatepass.setReturned(true);
-        gatepass.setReturnedAt(OffsetDateTime.now(ZoneId.of("Asia/Manila")));
+        gatepass.setReturnedAt(OffsetDateTime.now(storageZone));
         gatepassRepo.save(gatepass);
 
         return ResponseEntity.ok("Items returned");
@@ -150,10 +160,14 @@ public class GatepassController {
         if (gatepass != null) {
             dto.setReleased(gatepass.isReleased());
             dto.setReturned(gatepass.isReturned());
-            dto.setReleasedAt(gatepass.getReleasedAt());
-            dto.setReturnedAt(gatepass.getReturnedAt());
+            dto.setReleasedAt(toDisplayTime(gatepass.getReleasedAt()));
+            dto.setReturnedAt(toDisplayTime(gatepass.getReturnedAt()));
         }
 
         return dto;
+    }
+
+    private OffsetDateTime toDisplayTime(OffsetDateTime timestamp) {
+        return timestamp == null ? null : timestamp.withOffsetSameInstant(displayZone.getRules().getOffset(timestamp.toInstant()));
     }
 }
