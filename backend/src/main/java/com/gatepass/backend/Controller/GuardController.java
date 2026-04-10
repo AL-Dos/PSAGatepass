@@ -3,6 +3,8 @@ package com.gatepass.backend.Controller;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.util.Map;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 
 import org.springframework.http.HttpStatus;
@@ -27,6 +29,8 @@ import com.gatepass.backend.Repository.GatepassRepository;
 @RestController
 @RequestMapping("/api/guard")
 public class GuardController {
+    private static final Logger log = LoggerFactory.getLogger(GuardController.class);
+    
     private final GuardRepository guardRepo;
     private final PasswordEncoder encoder;
     private final JwtUtil jwtUtil;
@@ -76,10 +80,12 @@ public class GuardController {
     @PostMapping("/scan")
     public ResponseEntity<?> scan(@RequestBody com.gatepass.backend.Data.ScanRequestDTO dto, Authentication authentication) {
         if (dto.getQrToken() == null) {
+            log.warn("Scan request with missing QR token");
             return ResponseEntity.badRequest().body("Missing QR Token");
         }
 
         if (authentication == null || !authentication.isAuthenticated()) {
+            log.warn("Unauthorized scan attempt");
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized");
         }
 
@@ -87,12 +93,14 @@ public class GuardController {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED));
 
         if (!verifiedGuard.isActive()) {
+            log.warn("Scan attempt by inactive guard: {}", verifiedGuard.getName());
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Inactive guard");
         }
 
         com.gatepass.backend.Model.Gatepass gatepass = gatepassRepo.findByQrToken(dto.getQrToken());
 
         if (gatepass == null) {
+            log.warn("Scan attempt with invalid QR token by guard: {}", verifiedGuard.getName());
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Invalid QR Code");
         }
 
@@ -102,11 +110,14 @@ public class GuardController {
             gatepass.setReleased(true);
             gatepass.setReleasedAt(OffsetDateTime.now(storageZone));
             action = "Released";
+            log.info("Gatepass released by guard: {} for requestor: {}", verifiedGuard.getName(), gatepass.getRequestor().getName());
         } else if (!gatepass.isReturned()) {
             gatepass.setReturned(true);
             gatepass.setReturnedAt(OffsetDateTime.now(storageZone));
             action = "Returned";
+            log.info("Gatepass returned by guard: {} for requestor: {}", verifiedGuard.getName(), gatepass.getRequestor().getName());
         } else {
+            log.warn("Scan attempt on completed gatepass by guard: {}", verifiedGuard.getName());
             return ResponseEntity.badRequest().body("Gatepass already completed (Returned)");
         }
 

@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.gatepass.backend.Config.CookieConfig;
 import com.gatepass.backend.Security.JwtUtil;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -33,10 +34,12 @@ public class AuthController {
     private static final Logger log = LoggerFactory.getLogger(AuthController.class);
     private final JwtUtil jwtUtil;
     private final AuthenticationManager authManager;
+    private final CookieConfig cookieConfig;
 
-    public AuthController(AuthenticationManager authManager, JwtUtil jwtUtil) {
+    public AuthController(AuthenticationManager authManager, JwtUtil jwtUtil, CookieConfig cookieConfig) {
         this.authManager = authManager;
         this.jwtUtil = jwtUtil;
+        this.cookieConfig = cookieConfig;
     }
 
     @PostMapping("/login")
@@ -54,8 +57,8 @@ public class AuthController {
             // create cookie
             ResponseCookie cookie = ResponseCookie.from("jwt", token)
                 .httpOnly(true)
-                .secure(false) 
-                .sameSite("Lax")
+                .secure(cookieConfig.isSecure()) 
+                .sameSite(cookieConfig.getSameSite())
                 .path("/")
                 .maxAge(Duration.ofMillis(jwtUtil.getExpirationMs()))
                 .build();
@@ -73,8 +76,8 @@ public class AuthController {
     public ResponseEntity<Map<String, String>> logout(@CookieValue(required = false) String jwt, HttpServletResponse response) {
         ResponseCookie expired = ResponseCookie.from("jwt", "")
                 .httpOnly(true)
-                .secure(false)
-                .sameSite("Lax")
+                .secure(cookieConfig.isSecure())
+                .sameSite(cookieConfig.getSameSite())
                 .path("/")
                 .maxAge(0)
                 .build();

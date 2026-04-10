@@ -43,7 +43,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter{
             log.info("Authenticated user: { " + name + " } with role: { " + roles + " }");
         }
         else {
-            log.trace("Invalid JWT token: { " + token + " }");
+            log.trace("Invalid or missing JWT token");
         }
         filterChain.doFilter(request, response);
     }

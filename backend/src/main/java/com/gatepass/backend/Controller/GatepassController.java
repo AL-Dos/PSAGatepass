@@ -17,6 +17,8 @@ import com.gatepass.backend.Repository.GatepassRepository;
 import com.gatepass.backend.Repository.RequestorRepository;
 import com.gatepass.backend.Service.GatepassService;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -34,6 +36,8 @@ import java.util.stream.Collectors;
 @Controller
 @RequestMapping("/api")
 public class GatepassController {
+    private static final Logger log = LoggerFactory.getLogger(GatepassController.class);
+    
     private final RequestorRepository requestorRepo;
     private final GatepassRepository gatepassRepo;
     private final GatepassService gatepassService;
@@ -76,12 +80,16 @@ public class GatepassController {
 
     @GetMapping("/verify/{token}")
     public ResponseEntity<?> verify(@PathVariable String token) {
+        log.info("Verify request for token: {}", token.substring(0, Math.min(8, token.length())) + "...");
 
         Gatepass gatepass = gatepassRepo.findByQrToken(token);
 
         if (gatepass == null) {
+            log.warn("Invalid QR token attempted: {}", token.substring(0, Math.min(8, token.length())) + "...");
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Invalid QR");
         }
+        
+        log.debug("Gatepass verified for requestor: {}", gatepass.getRequestor().getName());
 
         GatepassVerificationDTO dto = new GatepassVerificationDTO();
         dto.setReleased(gatepass.isReleased());
@@ -96,40 +104,48 @@ public class GatepassController {
 
     @PostMapping("/verify/{token}/release")
     public ResponseEntity<?> release(@PathVariable String token) {
+        log.info("Release request for token: {}", token.substring(0, Math.min(8, token.length())) + "...");
 
         Gatepass gatepass = gatepassRepo.findByQrToken(token);
 
         if (gatepass == null) {
+            log.warn("Invalid token in release request: {}", token.substring(0, Math.min(8, token.length())) + "...");
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Invalid QR");
         }
 
         if (gatepass.isReleased()) {
+            log.warn("Duplicate release attempted for gatepass ID: {}", gatepass.getId());
             return ResponseEntity.badRequest().body("Already released");
         }
 
         gatepass.setReleased(true);
         gatepass.setReleasedAt(OffsetDateTime.now(storageZone));
         gatepassRepo.save(gatepass);
+        log.info("Items released for gatepass ID: {} (requestor: {})", gatepass.getId(), gatepass.getRequestor().getName());
 
         return ResponseEntity.ok("Items released");
     }
 
     @PostMapping("/verify/{token}/return")
     public ResponseEntity<?> returned(@PathVariable String token) {
+        log.info("Return request for token: {}", token.substring(0, Math.min(8, token.length())) + "...");
 
         Gatepass gatepass = gatepassRepo.findByQrToken(token);
 
         if (gatepass == null) {
+            log.warn("Invalid token in return request: {}", token.substring(0, Math.min(8, token.length())) + "...");
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Invalid QR");
         }
 
         if (!gatepass.isReleased()) {
+            log.warn("Return attempted on not-yet-released gatepass ID: {}", gatepass.getId());
             return ResponseEntity.badRequest().body("Not yet released");
         }
 
         gatepass.setReturned(true);
         gatepass.setReturnedAt(OffsetDateTime.now(storageZone));
         gatepassRepo.save(gatepass);
+        log.info("Items returned for gatepass ID: {} (requestor: {})", gatepass.getId(), gatepass.getRequestor().getName());
 
         return ResponseEntity.ok("Items returned");
     }
