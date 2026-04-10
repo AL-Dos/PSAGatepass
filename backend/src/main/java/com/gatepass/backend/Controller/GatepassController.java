@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 
 import com.gatepass.backend.Data.EquipmentDTO;
+import com.gatepass.backend.Data.GatepassVerificationDTO;
 import com.gatepass.backend.Data.RequestorDTO;
 import com.gatepass.backend.Data.RequestorEquipmentViewDTO;
 import com.gatepass.backend.Model.Equipments;
@@ -14,8 +15,7 @@ import com.gatepass.backend.Model.Gatepass;
 import com.gatepass.backend.Model.Requestors;
 import com.gatepass.backend.Repository.GatepassRepository;
 import com.gatepass.backend.Repository.RequestorRepository;
-import com.gatepass.backend.Util.GatepassUtil;
-import com.gatepass.backend.Util.QrCodeUtil;
+import com.gatepass.backend.Service.GatepassService;
 
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -23,12 +23,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
-import java.awt.image.BufferedImage;
+import jakarta.validation.Valid;
+
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.util.List;
-import java.util.Map;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Controller
@@ -36,78 +35,25 @@ import java.util.stream.Collectors;
 public class GatepassController {
     private final RequestorRepository requestorRepo;
     private final GatepassRepository gatepassRepo;
+    private final GatepassService gatepassService;
 
-    public GatepassController(RequestorRepository requestorRepo, GatepassRepository gatepassRepo) {
+    public GatepassController(RequestorRepository requestorRepo, GatepassRepository gatepassRepo, GatepassService gatepassService) {
         this.requestorRepo = requestorRepo;
         this.gatepassRepo = gatepassRepo;
+        this.gatepassService = gatepassService;
     }
 
     @PostMapping("/submit")
-    public ResponseEntity<?> submitJson(@RequestBody RequestorDTO form) {
-        if (form == null) {
-            return ResponseEntity.badRequest().body("request body is required");
+    public ResponseEntity<?> submitJson(@Valid @RequestBody RequestorDTO form) {
+        try {
+            byte[] pdf = gatepassService.submitRequest(form);
+            return ResponseEntity.ok()
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"gatepass.pdf\"")
+                    .contentType(MediaType.APPLICATION_PDF)
+                    .body(pdf);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error processing request: " + e.getMessage());
         }
-        if (form.name == null || form.name.trim().isEmpty()) {
-            return ResponseEntity.badRequest().body("name is required");
-        }
-        if (form.destination == null || form.destination.trim().isEmpty()) {
-            return ResponseEntity.badRequest().body("destination is required");
-        }
-        if (form.period == null || form.period.trim().isEmpty()) {
-            return ResponseEntity.badRequest().body("period is required");
-        }
-        if (form.purpose == null || form.purpose.trim().isEmpty()) {
-            return ResponseEntity.badRequest().body("purpose is required");
-        }
-        if (form.getEquipment() == null || form.getEquipment().isEmpty()) {
-            return ResponseEntity.badRequest().body("equipment is required");
-        }
-
-        Requestors requestor = new Requestors();
-        requestor.setName(form.name);
-        requestor.setDestination(form.destination);
-        requestor.setPeriod(form.period);
-        requestor.setPurpose(form.purpose);
-
-        // Save Requestor first to generate ID
-        requestor = requestorRepo.save(requestor);
-
-        Gatepass gatepass = new Gatepass();
-        gatepass.setQrToken(UUID.randomUUID().toString());
-        gatepass.setRequestor(requestor);
-
-        // Save Gatepass to generate ID
-        gatepass = gatepassRepo.save(gatepass);
-
-        // Capture effectively final variables for lambda
-        final Requestors savedRequestor = requestor;
-        final Gatepass savedGatepass = gatepass;
-
-        var items = form.getEquipment().stream().map(itemDto -> {
-            Equipments item = new Equipments();
-            item.setEquipmentName(itemDto.equipmentName);
-            item.setQuantity(itemDto.quantity);
-            item.setEquipmentCode(itemDto.equipmentCode);
-            item.setGatepass(savedGatepass);
-            item.setRequestor(savedRequestor);
-            return item;
-        }).collect(java.util.stream.Collectors.toList());
-
-        savedRequestor.setEquipment(items);
-        savedGatepass.setEquipments(items);
-
-        // Save Requestor again to cascade save Equipments
-        requestorRepo.save(savedRequestor);
-
-        String qrUrl = "http://localhost:4200/verify/" + gatepass.getQrToken();
-
-        BufferedImage qrImage = QrCodeUtil.generateQr(qrUrl, 300);
-
-        byte[] pdf = GatepassUtil.createMultiItemPdf(qrImage, items);
-        return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"gatepass.pdf\"")
-                .contentType(MediaType.APPLICATION_PDF)
-                .body(pdf);
     }
 
     @GetMapping("/requestors")
@@ -127,11 +73,15 @@ public class GatepassController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Invalid QR");
         }
 
-        return ResponseEntity.ok(Map.of(
-                "released", gatepass.isReleased(),
-                "returned", gatepass.isReturned(),
-                "requestor", gatepass.getRequestor().getName(),
-                "equipment", gatepass.getEquipments()));
+        GatepassVerificationDTO dto = new GatepassVerificationDTO();
+        dto.setReleased(gatepass.isReleased());
+        dto.setReturned(gatepass.isReturned());
+        dto.setRequestor(gatepass.getRequestor().getName());
+        dto.setEquipment(gatepass.getEquipments().stream()
+                .map(this::toEquipmentDto)
+                .collect(Collectors.toList()));
+
+        return ResponseEntity.ok(dto);
     }
 
     @PostMapping("/verify/{token}/release")
