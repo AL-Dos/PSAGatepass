@@ -15,7 +15,7 @@ import org.openpdf.text.pdf.PdfPTable;
 import com.gatepass.backend.Model.Requestors;
 
 public class DateLetter {
-    public void buildHeaderLetter(LocalDate date, Document docs, Requestors requestor, Requestors purpose) throws DocumentException {
+    public void buildHeaderLetter(LocalDate date, Document docs, Requestors requestor, Requestors purpose, String controlNumber) throws DocumentException {
         Font gatepass = FontCollection.getGatepassFont();
         Font headerFont = FontCollection.getHeaderFont();
         String formattedDate = date.format(DateTimeFormatter.ofPattern("dd MMMM yyyy"));
@@ -53,7 +53,9 @@ public class DateLetter {
         controlLabelCell.setBorder(Rectangle.NO_BORDER);
         controlTable.addCell(controlLabelCell);
 
-        PdfPCell controlValueCell = new PdfPCell();
+        PdfPCell controlValueCell = new PdfPCell(new Paragraph(displayOrBlank(controlNumber, 12), headerFont));
+        controlValueCell.setVerticalAlignment(PdfPCell.ALIGN_MIDDLE);
+        controlValueCell.setHorizontalAlignment(PdfPCell.ALIGN_CENTER);
         controlValueCell.setBorder(Rectangle.BOTTOM);
         controlTable.addCell(controlValueCell);
 
