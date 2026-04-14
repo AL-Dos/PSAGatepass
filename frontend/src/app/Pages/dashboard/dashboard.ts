@@ -4,25 +4,29 @@ import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatPaginatorModule, MatPaginator } from '@angular/material/paginator';
-import { MatSelectModule } from '@angular/material/select';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatSortModule, MatSort } from '@angular/material/sort';
 import { MatTableModule, MatTableDataSource } from '@angular/material/table';
 import { EquipmentService } from '../../Services/equipment/equipment.service';
 
-export const DASHBOARD_TABLE_COLUMNS = [CommonModule,
-    FormsModule,
-    MatTableModule,
-    MatSortModule,
-    MatPaginatorModule,
-    MatButtonModule,
-    MatIconModule,
-    MatInputModule,
-    MatDatepickerModule,
-    MatNativeDateModule,
-    MatSelectModule] as const;
+export const DASHBOARD_TABLE_COLUMNS = [
+  CommonModule,
+  FormsModule,
+  MatTableModule,
+  MatSortModule,
+  MatPaginatorModule,
+  MatButtonModule,
+  MatCheckboxModule,
+  MatIconModule,
+  MatInputModule,
+  MatDatepickerModule,
+  MatNativeDateModule,
+  MatSnackBarModule
+] as const;
 
 interface EquipmentData {
   id: number;
@@ -48,15 +52,17 @@ interface EquipmentData {
 })
 export class Dashboard implements OnInit {
   dataSource = new MatTableDataSource<EquipmentData>();
-  displayedColumns: string[] = ['id', 'equip', 'quan', 'pNum', 'dest', 'pCover', 'req', 'released', 'returned'];
+  displayedColumns: string[] = ['select', 'id', 'equip', 'quan', 'pNum', 'dest', 'pCover', 'req', 'released', 'returned'];
   isExporting = false;
-  requestorOptions: Array<{ id: number; name: string }> = [];
-  selectedRequestorId: number | null = null;
+  selectedIds = new Set<number>();
 
   @ViewChild(MatSort) sort!: MatSort;
   @ViewChild(MatPaginator) paginator!: MatPaginator;
 
-  constructor(private equipmentService: EquipmentService) {}
+  constructor(
+    private equipmentService: EquipmentService,
+    private snackBar: MatSnackBar
+  ) {}
 
   ngOnInit() {
     this.loadEquipment();
@@ -91,12 +97,10 @@ export class Dashboard implements OnInit {
     this.equipmentService.getAllEquipment().subscribe({
       next: (requestors: any[]) => {
         const equipmentData: EquipmentData[] = [];
-        const requestorOptions: Array<{ id: number; name: string }> = [];
 
         // Flatten the nested equipment from each requestor
         requestors.forEach(requestor => {
           if (requestor.equipment && Array.isArray(requestor.equipment)) {
-            requestorOptions.push({ id: requestor.id, name: requestor.name });
             requestor.equipment.forEach((eq: any) => {
               equipmentData.push({
                 id: eq.id,
@@ -119,10 +123,7 @@ export class Dashboard implements OnInit {
         this.dataSource.data = equipmentData;
         this.dataSource.sort = this.sort;
         this.dataSource.paginator = this.paginator;
-        this.requestorOptions = requestorOptions.sort((a, b) => a.name.localeCompare(b.name));
-        if (this.requestorOptions.length === 0) {
-          this.selectedRequestorId = null;
-        }
+        this.selectedIds.clear();
       },
       error: (err) => {
         console.error('Error loading equipment:', err);
@@ -151,11 +152,104 @@ export class Dashboard implements OnInit {
     return this.dataSource.data.filter(item => !item.released).length;
   }
 
+  getSelectedCount(): number {
+    return this.selectedIds.size;
+  }
+
+  hasMultipleRequestorsSelected(): boolean {
+    return this.getSelectedRequestorIdSet().size > 1;
+  }
+
+  isAllSelected(): boolean {
+    const rows = this.getSelectableRows();
+    if (rows.length === 0) return false;
+    return rows.every(row => this.selectedIds.has(row.id));
+  }
+
+  isSomeSelected(): boolean {
+    const rows = this.getSelectableRows();
+    if (rows.length === 0) return false;
+    const selected = rows.filter(row => this.selectedIds.has(row.id)).length;
+    return selected > 0 && selected < rows.length;
+  }
+
+  toggleAll(checked: boolean): void {
+    if (!checked) {
+      this.selectedIds.clear();
+      return;
+    }
+    const rows = this.getSelectableRows();
+    if (rows.length === 0) return;
+
+    const currentRequestorId = this.getSingleSelectedRequestorId();
+    if (currentRequestorId !== null) {
+      rows.filter(row => row.requestorId === currentRequestorId)
+        .forEach(row => this.selectedIds.add(row.id));
+      return;
+    }
+
+    const requestorIds = new Set(rows.map(row => row.requestorId));
+    if (requestorIds.size > 1) {
+      this.showRequestorMismatchWarning();
+      return;
+    }
+
+    rows.forEach(row => this.selectedIds.add(row.id));
+  }
+
+  toggleRow(row: EquipmentData, checked: boolean): void {
+    if (row.returned) return;
+    if (checked) {
+      const currentRequestorId = this.getSingleSelectedRequestorId();
+      if (currentRequestorId !== null && row.requestorId !== currentRequestorId) {
+        this.showRequestorMismatchWarning();
+        return;
+      }
+      this.selectedIds.add(row.id);
+    } else {
+      this.selectedIds.delete(row.id);
+    }
+  }
+
+  private getSelectableRows(): EquipmentData[] {
+    const rows = this.dataSource.filteredData && this.dataSource.filteredData.length > 0
+      ? this.dataSource.filteredData
+      : this.dataSource.data;
+    return rows.filter(row => !row.returned);
+  }
+
+  private getSelectedRequestorIdSet(): Set<number> {
+    const ids = new Set<number>();
+    for (const row of this.dataSource.data) {
+      if (this.selectedIds.has(row.id)) {
+        ids.add(row.requestorId);
+      }
+    }
+    return ids;
+  }
+
+  private getSingleSelectedRequestorId(): number | null {
+    const ids = this.getSelectedRequestorIdSet();
+    if (ids.size === 1) {
+      return ids.values().next().value as number;
+    }
+    return null;
+  }
+
+  private showRequestorMismatchWarning(): void {
+    this.snackBar.open('You can only select items from one requestor at a time.', 'OK', {
+      duration: 3500,
+      horizontalPosition: 'right',
+      verticalPosition: 'top'
+    });
+  }
+
   exportLogs(): void {
-    if (this.selectedRequestorId === null) return;
-    const ids = this.dataSource.data
-      .filter(item => item.requestorId === this.selectedRequestorId)
-      .map(item => item.id);
+    if (this.hasMultipleRequestorsSelected()) {
+      this.showRequestorMismatchWarning();
+      return;
+    }
+    const ids = Array.from(this.selectedIds.values());
     if (ids.length === 0) return;
     this.isExporting = true;
     this.equipmentService.exportLogs(ids).subscribe({

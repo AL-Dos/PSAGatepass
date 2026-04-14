@@ -30,19 +30,9 @@
       </div>
 
       <div class="actions-bar">
-        <mat-form-field class="actions-select" appearance="outline">
-          <mat-label>Requestor</mat-label>
-          <mat-select [(ngModel)]="selectedRequestorId" panelClass="actions-bar-panel">
-            @for (option of requestorOptions; track option.id) {
-              <mat-option [value]="option.id">
-              {{ option.name }}
-              </mat-option>
-            }
-          </mat-select>
-        </mat-form-field>
         <button mat-raised-button color="primary"
                 (click)="exportLogs()"
-                [disabled]="isExporting || dataSource.data.length === 0 || selectedRequestorId === null">
+                [disabled]="isExporting || dataSource.data.length === 0 || getSelectedCount() === 0 || hasMultipleRequestorsSelected()">
           Export PDF
         </button>
       </div>
@@ -50,6 +40,24 @@
 
     <div class="table-scroll">
       <table mat-table [dataSource]="dataSource" matSort>
+        <!-- Select Column -->
+        <ng-container matColumnDef="select">
+          <th mat-header-cell *matHeaderCellDef>
+            <mat-checkbox
+              [checked]="isAllSelected()"
+              [indeterminate]="isSomeSelected()"
+              (change)="toggleAll($event.checked)">
+            </mat-checkbox>
+          </th>
+          <td mat-cell *matCellDef="let element">
+            <mat-checkbox
+              [checked]="selectedIds.has(element.id)"
+              [disabled]="element.returned"
+              (change)="toggleRow(element, $event.checked)">
+            </mat-checkbox>
+          </td>
+        </ng-container>
+
         <!-- ID Column -->
         <ng-container matColumnDef="id">
           <th mat-header-cell *matHeaderCellDef mat-sort-header="id"> ID </th>
