@@ -3,6 +3,7 @@ package com.gatepass.backend.Service;
 import java.io.ByteArrayOutputStream;
 import java.awt.image.BufferedImage;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import org.openpdf.text.Document;
@@ -31,7 +32,10 @@ public class TransmittalService {
             document.open();
             document.add(new Paragraph(" "));
             Requestors requestor = getRequestor(equipments);
-            new DateLetter().buildHeaderLetter(LocalDate.now(), document, requestor, null);
+            LocalDate today = LocalDate.now();
+            Gatepass gatepass = getGatepass(equipments);
+            String controlNumber = buildControlNumber(today, gatepass);
+            new DateLetter().buildHeaderLetter(today, document, requestor, null, controlNumber);
             new TableLogs().getTableLogs(document, equipments);
             BufferedImage qrImage = buildGatepassQr(equipments);
             new Signature().buildSignature(document, qrImage, requestor);
@@ -48,7 +52,7 @@ public class TransmittalService {
             return null;
         }
 
-        Gatepass firstGatepass = equipments.get(0).getGatepass();
+        Gatepass firstGatepass = getGatepass(equipments);
         if (firstGatepass == null || firstGatepass.getQrToken() == null) {
             return null;
         }
@@ -63,6 +67,32 @@ public class TransmittalService {
 
         String qrUrl = "http://localhost:4200/verify/" + firstGatepass.getQrToken();
         return QrCodeUtil.generateQr(qrUrl, 300);
+    }
+
+    private Gatepass getGatepass(List<Equipments> equipments) {
+        if (equipments == null || equipments.isEmpty()) {
+            return null;
+        }
+        Gatepass first = equipments.get(0).getGatepass();
+        if (first == null) {
+            return null;
+        }
+        for (Equipments eq : equipments) {
+            Gatepass gatepass = eq.getGatepass();
+            if (gatepass == null || gatepass.getId() == null || !first.getId().equals(gatepass.getId())) {
+                throw new IllegalArgumentException("All selected rows must belong to the same gatepass to build a control number.");
+            }
+        }
+        return first;
+    }
+
+    private String buildControlNumber(LocalDate date, Gatepass gatepass) {
+        if (date == null || gatepass == null || gatepass.getId() == null) {
+            return "";
+        }
+        String yyMm = date.format(DateTimeFormatter.ofPattern("yy-MM"));
+        String idPart = String.format("%04d", gatepass.getId());
+        return yyMm + "-" + idPart;
     }
 
     private Requestors getRequestor(List<Equipments> equipments) {
