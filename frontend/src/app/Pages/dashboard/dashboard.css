@@ -166,7 +166,6 @@ th.mat-header-cell {
 
 th.mat-header-cell:first-child,
 td.mat-cell:first-child {
-  width: 48px;
   text-align: center;
 }
 
@@ -343,6 +342,16 @@ tr.mat-row.row-released td {
   font-style: italic;
   margin: 0;
 }
+
+.mat-column-id { width: 20px;  }
+.mat-column-equip { width: 100px; }
+.mat-column-quan { width: 20px; }
+.mat-column-pNum { width: 400px; }
+.mat-column-dest { width: 270px; }
+.mat-column-pCover { width: 170px; }
+.mat-column-req { width: 200px; }
+.mat-column-released { width: 250px; }
+.mat-column-returned { width: 250px; }
 
 /* Animations */
 @keyframes fadeInDown {
