@@ -19,6 +19,11 @@ export const routes: Routes = [
     canActivate: [AuthGuard]
   },
   {
+    path: 'archived',
+    loadComponent: () => import('./Pages/archived/archived').then(m => m.Archived),
+    canActivate: [AuthGuard]
+  },
+  {
     path: 'guard',
     loadComponent: () => import('./Pages/guard-scan/guard-scan').then(m => m.GuardScan)
   }

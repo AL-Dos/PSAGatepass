@@ -11,6 +11,7 @@ import { MatPaginatorModule, MatPaginator } from '@angular/material/paginator';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatSortModule, MatSort } from '@angular/material/sort';
 import { MatTableModule, MatTableDataSource } from '@angular/material/table';
+import { Router } from '@angular/router';
 import { EquipmentService } from '../../Services/equipment/equipment.service';
 
 export const DASHBOARD_TABLE_COLUMNS = [
@@ -52,7 +53,7 @@ interface EquipmentData {
 })
 export class Dashboard implements OnInit {
   dataSource = new MatTableDataSource<EquipmentData>();
-  displayedColumns: string[] = ['select', 'id', 'equip', 'quan', 'pNum', 'dest', 'pCover', 'req', 'released', 'returned'];
+  displayedColumns: string[] = ['select', 'id', 'equip', 'quan', 'pNum', 'dest', 'pCover', 'req', 'released', 'returned', 'actions'];
   isExporting = false;
   selectedIds = new Set<number>();
 
@@ -61,7 +62,8 @@ export class Dashboard implements OnInit {
 
   constructor(
     private equipmentService: EquipmentService,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private router: Router
   ) {}
 
   ngOnInit() {
@@ -244,6 +246,29 @@ export class Dashboard implements OnInit {
     });
   }
 
+  archiveSelected(): void {
+    const ids = Array.from(this.selectedIds.values());
+    if (ids.length === 0) return;
+    if (this.hasMultipleRequestorsSelected()) {
+      this.showRequestorMismatchWarning();
+      return;
+    }
+    this.equipmentService.archiveEquipment(ids).subscribe({
+      next: () => {
+        this.snackBar.open('Selected gatepass entries archived', 'Close', { duration: 3000 });
+        this.loadEquipment();
+      },
+      error: (err) => {
+        console.error('Error archiving entries:', err);
+        this.snackBar.open(err.error || 'Error archiving entries', 'Close', { duration: 5000 });
+      }
+    });
+  }
+
+  gotoArchived(): void {
+    this.router.navigate(['/archived']);
+  }
+
   exportLogs(): void {
     if (this.hasMultipleRequestorsSelected()) {
       this.showRequestorMismatchWarning();
@@ -267,6 +292,50 @@ export class Dashboard implements OnInit {
       error: (err) => {
         console.error('Error exporting logs:', err);
         this.isExporting = false;
+      }
+    });
+  }
+
+  releaseEntry(element: EquipmentData): void {
+    if (element.released) return;
+    this.equipmentService.releaseEquipment([element.id]).subscribe({
+      next: () => {
+        this.snackBar.open('Entry marked as released', 'Close', { duration: 3000 });
+        this.loadEquipment();
+      },
+      error: (err) => {
+        console.error('Error releasing entry:', err);
+        this.snackBar.open(err.error || 'Error releasing entry', 'Close', { duration: 5000 });
+      }
+    });
+  }
+
+  returnEntry(element: EquipmentData): void {
+    if (!element.released || element.returned) return;
+    this.equipmentService.returnEquipment([element.id]).subscribe({
+      next: () => {
+        this.snackBar.open('Entry marked as returned', 'Close', { duration: 3000 });
+        this.loadEquipment();
+      },
+      error: (err) => {
+        console.error('Error returning entry:', err);
+        this.snackBar.open(err.error || 'Error returning entry', 'Close', { duration: 5000 });
+      }
+    });
+  }
+
+  deleteEntry(element: EquipmentData): void {
+    if (!window.confirm('Delete this equipment entry?')) {
+      return;
+    }
+    this.equipmentService.deleteEquipment([element.id]).subscribe({
+      next: () => {
+        this.snackBar.open('Entry deleted', 'Close', { duration: 3000 });
+        this.loadEquipment();
+      },
+      error: (err) => {
+        console.error('Error deleting entry:', err);
+        this.snackBar.open(err.error || 'Error deleting entry', 'Close', { duration: 5000 });
       }
     });
   }

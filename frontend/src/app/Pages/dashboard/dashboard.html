@@ -35,6 +35,16 @@
                 [disabled]="isExporting || dataSource.data.length === 0 || getSelectedCount() === 0 || hasMultipleRequestorsSelected()">
           Export PDF
         </button>
+        <button mat-raised-button color="accent"
+                (click)="archiveSelected()"
+                [disabled]="dataSource.data.length === 0 || getSelectedCount() === 0 || hasMultipleRequestorsSelected()">
+          Archive Selected
+        </button>
+        <button mat-raised-button color="warn"
+                (click)="gotoArchived()"
+                [disabled]="dataSource.data.length === 0">
+          View Archived
+        </button>
       </div>
     </div>
 
@@ -154,6 +164,24 @@
                   {{ element.returnedAt | date:'MMM d, y h:mm a' }}
                 </span>
               }
+            </div>
+          </td>
+        </ng-container>
+
+        <!-- Actions -->
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef> Actions </th>
+          <td mat-cell *matCellDef="let element">
+            <div class="action-buttons">
+              <button mat-mini-button color="primary" (click)="releaseEntry(element)" [disabled]="element.released">
+                Release
+              </button>
+              <button mat-mini-button color="accent" (click)="returnEntry(element)" [disabled]="!element.released || element.returned">
+                Return
+              </button>
+              <button mat-mini-button color="warn" (click)="deleteEntry(element)">
+                Delete
+              </button>
             </div>
           </td>
         </ng-container>

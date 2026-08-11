@@ -47,4 +47,10 @@ public class Gatepass {
     @OneToMany(mappedBy = "gatepass")
     @JsonBackReference
     private List<Equipments> equipments;
+    @Column(name = "archived", nullable = false)
+    private boolean archived = false;
+
+    @Column(name = "archived_at")
+    private OffsetDateTime archivedAt;
+
 }

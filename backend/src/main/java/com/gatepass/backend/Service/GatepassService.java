@@ -1,6 +1,8 @@
 package com.gatepass.backend.Service;
 
 import java.awt.image.BufferedImage;
+import java.time.OffsetDateTime;
+import java.time.ZoneId;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -15,6 +17,7 @@ import com.gatepass.backend.Data.RequestorDTO;
 import com.gatepass.backend.Model.Equipments;
 import com.gatepass.backend.Model.Gatepass;
 import com.gatepass.backend.Model.Requestors;
+import com.gatepass.backend.Repository.EquipmentRepository;
 import com.gatepass.backend.Repository.GatepassRepository;
 import com.gatepass.backend.Repository.RequestorRepository;
 import com.gatepass.backend.Util.GatepassUtil;
@@ -26,15 +29,21 @@ public class GatepassService {
 
     private final RequestorRepository requestorRepo;
     private final GatepassRepository gatepassRepo;
+    private final EquipmentRepository equipmentRepo;
     private final String verifyBaseUrl;
+    private final ZoneId storageZone;
 
     public GatepassService(
             RequestorRepository requestorRepo,
             GatepassRepository gatepassRepo,
-            @Value("${app.qr.verify-base-url:http://localhost:8080/api/verify/}") String verifyBaseUrl) {
+            EquipmentRepository equipmentRepo,
+            @Value("${app.qr.verify-base-url:http://localhost:8080/api/verify/}") String verifyBaseUrl,
+            @Value("${app.timezone.storage:UTC}") String storageTimezone) {
         this.requestorRepo = requestorRepo;
         this.gatepassRepo = gatepassRepo;
+        this.equipmentRepo = equipmentRepo;
         this.verifyBaseUrl = verifyBaseUrl.endsWith("/") ? verifyBaseUrl : verifyBaseUrl + "/";
+        this.storageZone = ZoneId.of(storageTimezone);
     }
 
     @Transactional
@@ -80,5 +89,33 @@ public class GatepassService {
         BufferedImage qrImage = QrCodeUtil.generateQr(qrUrl, 300);
         byte[] pdf = GatepassUtil.createMultiItemPdf(qrImage, items);
         return pdf;
+    }
+
+    @Transactional
+    public void archiveByEquipmentIds(List<Long> equipmentIds) {
+        List<Equipments> equipments = equipmentRepo.findByIdIn(equipmentIds == null ? List.of() : equipmentIds);
+        for (Equipments equipment : equipments) {
+            Gatepass gp = equipment.getGatepass();
+            if (gp == null) continue;
+            if (!gp.isArchived()) {
+                gp.setArchived(true);
+                gp.setArchivedAt(OffsetDateTime.now(storageZone));
+                gatepassRepo.save(gp);
+            }
+        }
+    }
+
+    @Transactional
+    public void unarchiveByEquipmentIds(List<Long> equipmentIds) {
+        List<Equipments> equipments = equipmentRepo.findByIdIn(equipmentIds == null ? List.of() : equipmentIds);
+        for (Equipments equipment : equipments) {
+            Gatepass gp = equipment.getGatepass();
+            if (gp == null) continue;
+            if (gp.isArchived()) {
+                gp.setArchived(false);
+                gp.setArchivedAt(null);
+                gatepassRepo.save(gp);
+            }
+        }
     }
 }

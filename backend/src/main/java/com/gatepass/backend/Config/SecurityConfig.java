@@ -60,6 +60,7 @@ public class SecurityConfig {
                             "/api/guard/login")
                         .permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/verify/**").hasAnyRole("GUARD", "ADMIN")
+                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         .requestMatchers("/api/guard/scan").hasRole("GUARD")
                         .requestMatchers("/api/list/**").hasRole("ADMIN")
                         .requestMatchers("/api/logout").authenticated()

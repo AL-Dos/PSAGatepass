@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.gatepass.backend.Data.RequestorDTO;
@@ -13,11 +12,14 @@ import com.gatepass.backend.Repository.RequestorRepository;
 
 @Service
 public class RequestorService {
-    @Autowired
-    private RequestorRepository requestorRepository;
+    private final RequestorRepository requestorRepository;
     
-    @Autowired
-    private ModelMapper modelMapper;
+    private final ModelMapper modelMapper;
+
+    RequestorService(RequestorRepository requestorRepository, ModelMapper modelMapper) {
+        this.requestorRepository = requestorRepository;
+        this.modelMapper = modelMapper;
+    }
     
     public List<RequestorDTO> getAllRequestorsWithEquipmentAndGatepass() {
         List<Requestors> requestors = requestorRepository.findAll();

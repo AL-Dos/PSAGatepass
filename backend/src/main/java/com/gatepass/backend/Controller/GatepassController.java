@@ -6,6 +6,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 
+import com.gatepass.backend.Data.AdminEquipmentActionRequest;
 import com.gatepass.backend.Data.EquipmentDTO;
 import com.gatepass.backend.Data.GatepassVerificationDTO;
 import com.gatepass.backend.Data.RequestorDTO;
@@ -13,6 +14,7 @@ import com.gatepass.backend.Data.RequestorEquipmentViewDTO;
 import com.gatepass.backend.Model.Equipments;
 import com.gatepass.backend.Model.Gatepass;
 import com.gatepass.backend.Model.Requestors;
+import com.gatepass.backend.Repository.EquipmentRepository;
 import com.gatepass.backend.Repository.GatepassRepository;
 import com.gatepass.backend.Repository.RequestorRepository;
 import com.gatepass.backend.Service.GatepassService;
@@ -40,6 +42,7 @@ public class GatepassController {
     
     private final RequestorRepository requestorRepo;
     private final GatepassRepository gatepassRepo;
+    private final EquipmentRepository equipmentRepo;
     private final GatepassService gatepassService;
     private final ZoneId storageZone;
     private final ZoneId displayZone;
@@ -47,11 +50,13 @@ public class GatepassController {
     public GatepassController(
             RequestorRepository requestorRepo,
             GatepassRepository gatepassRepo,
+            EquipmentRepository equipmentRepo,
             GatepassService gatepassService,
             @Value("${app.timezone.storage:UTC}") String storageTimezone,
             @Value("${app.timezone.display:Asia/Manila}") String displayTimezone) {
         this.requestorRepo = requestorRepo;
         this.gatepassRepo = gatepassRepo;
+        this.equipmentRepo = equipmentRepo;
         this.gatepassService = gatepassService;
         this.storageZone = ZoneId.of(storageTimezone);
         this.displayZone = ZoneId.of(displayTimezone);
@@ -78,11 +83,94 @@ public class GatepassController {
         return ResponseEntity.ok(requestors);
     }
 
+    @PostMapping("/admin/release")
+    public ResponseEntity<?> adminRelease(@RequestBody AdminEquipmentActionRequest request) {
+        List<Equipments> equipments = request.getEquipmentIds() == null ? List.of() : equipmentRepo.findByIdIn(request.getEquipmentIds());
+        if (equipments.isEmpty()) {
+            return ResponseEntity.badRequest().body("No equipment selected");
+        }
+
+        for (Equipments equipment : equipments) {
+            Gatepass gatepass = equipment.getGatepass();
+            if (gatepass == null) {
+                continue;
+            }
+            if (!gatepass.isReleased()) {
+                gatepass.setReleased(true);
+                gatepass.setReleasedAt(OffsetDateTime.now(storageZone));
+                gatepassRepo.save(gatepass);
+            }
+        }
+
+        return ResponseEntity.ok("Selected entries marked as released");
+    }
+
+    @PostMapping("/admin/return")
+    public ResponseEntity<?> adminReturn(@RequestBody AdminEquipmentActionRequest request) {
+        List<Equipments> equipments = request.getEquipmentIds() == null ? List.of() : equipmentRepo.findByIdIn(request.getEquipmentIds());
+        if (equipments.isEmpty()) {
+            return ResponseEntity.badRequest().body("No equipment selected");
+        }
+
+        for (Equipments equipment : equipments) {
+            Gatepass gatepass = equipment.getGatepass();
+            if (gatepass == null || !gatepass.isReleased()) {
+                continue;
+            }
+            if (!gatepass.isReturned()) {
+                gatepass.setReturned(true);
+                gatepass.setReturnedAt(OffsetDateTime.now(storageZone));
+                gatepassRepo.save(gatepass);
+            }
+        }
+
+        return ResponseEntity.ok("Selected entries marked as returned");
+    }
+
+    @PostMapping("/admin/delete")
+    public ResponseEntity<?> adminDelete(@RequestBody AdminEquipmentActionRequest request) {
+        List<Equipments> equipments = request.getEquipmentIds() == null ? List.of() : equipmentRepo.findByIdIn(request.getEquipmentIds());
+        if (equipments.isEmpty()) {
+            return ResponseEntity.badRequest().body("No equipment selected");
+        }
+
+        equipmentRepo.deleteAll(equipments);
+        return ResponseEntity.ok("Selected entries deleted");
+    }
+
+    @PostMapping("/admin/archive")
+    public ResponseEntity<?> adminArchive(@RequestBody AdminEquipmentActionRequest request) {
+        if (request.getEquipmentIds() == null || request.getEquipmentIds().isEmpty()) {
+            return ResponseEntity.badRequest().body("No equipment selected");
+        }
+        gatepassService.archiveByEquipmentIds(request.getEquipmentIds());
+        return ResponseEntity.ok("Selected entries archived");
+    }
+
+    @PostMapping("/admin/unarchive")
+    public ResponseEntity<?> adminUnarchive(@RequestBody AdminEquipmentActionRequest request) {
+        if (request.getEquipmentIds() == null || request.getEquipmentIds().isEmpty()) {
+            return ResponseEntity.badRequest().body("No equipment selected");
+        }
+        gatepassService.unarchiveByEquipmentIds(request.getEquipmentIds());
+        return ResponseEntity.ok("Selected entries unarchived");
+    }
+
+    @GetMapping("/admin/archived")
+    public ResponseEntity<List<RequestorEquipmentViewDTO>> getArchivedRequestors() {
+        List<RequestorEquipmentViewDTO> archived = requestorRepo.findAll().stream()
+                .filter(r -> r.getEquipment() != null && r.getEquipment().stream().anyMatch(e -> e.getGatepass() != null && e.getGatepass().isArchived()))
+                .map(this::toRequestorEquipmentView)
+                .collect(Collectors.toList());
+
+        return ResponseEntity.ok(archived);
+    }
+
     @GetMapping("/verify/{token}")
     public ResponseEntity<?> verify(@PathVariable String token) {
         log.info("Verify request for token: {}", token.substring(0, Math.min(8, token.length())) + "...");
 
-        Gatepass gatepass = gatepassRepo.findByQrToken(token);
+        Gatepass gatepass = gatepassRepo.findByQrTokenAndArchivedFalse(token);
 
         if (gatepass == null) {
             log.warn("Invalid QR token attempted: {}", token.substring(0, Math.min(8, token.length())) + "...");
@@ -106,7 +194,7 @@ public class GatepassController {
     public ResponseEntity<?> release(@PathVariable String token) {
         log.info("Release request for token: {}", token.substring(0, Math.min(8, token.length())) + "...");
 
-        Gatepass gatepass = gatepassRepo.findByQrToken(token);
+        Gatepass gatepass = gatepassRepo.findByQrTokenAndArchivedFalse(token);
 
         if (gatepass == null) {
             log.warn("Invalid token in release request: {}", token.substring(0, Math.min(8, token.length())) + "...");
@@ -130,7 +218,7 @@ public class GatepassController {
     public ResponseEntity<?> returned(@PathVariable String token) {
         log.info("Return request for token: {}", token.substring(0, Math.min(8, token.length())) + "...");
 
-        Gatepass gatepass = gatepassRepo.findByQrToken(token);
+        Gatepass gatepass = gatepassRepo.findByQrTokenAndArchivedFalse(token);
 
         if (gatepass == null) {
             log.warn("Invalid token in return request: {}", token.substring(0, Math.min(8, token.length())) + "...");

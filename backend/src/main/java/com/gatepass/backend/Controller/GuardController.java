@@ -97,7 +97,7 @@ public class GuardController {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Inactive guard");
         }
 
-        com.gatepass.backend.Model.Gatepass gatepass = gatepassRepo.findByQrToken(dto.getQrToken());
+        com.gatepass.backend.Model.Gatepass gatepass = gatepassRepo.findByQrTokenAndArchivedFalse(dto.getQrToken());
 
         if (gatepass == null) {
             log.warn("Scan attempt with invalid QR token by guard: {}", verifiedGuard.getName());

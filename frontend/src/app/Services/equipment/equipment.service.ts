@@ -33,4 +33,28 @@ export class EquipmentService {
       responseType: 'blob'
     });
   }
+
+  releaseEquipment(equipmentIds: number[]) {
+    return this.http.post(`${this.apiUrl}/admin/release`, { equipmentIds }, { withCredentials: true });
+  }
+
+  returnEquipment(equipmentIds: number[]) {
+    return this.http.post(`${this.apiUrl}/admin/return`, { equipmentIds }, { withCredentials: true });
+  }
+
+  deleteEquipment(equipmentIds: number[]) {
+    return this.http.post(`${this.apiUrl}/admin/delete`, { equipmentIds }, { withCredentials: true });
+  }
+
+  archiveEquipment(equipmentIds: number[]) {
+    return this.http.post(`${this.apiUrl}/admin/archive`, { equipmentIds }, { withCredentials: true });
+  }
+
+  unarchiveEquipment(equipmentIds: number[]) {
+    return this.http.post(`${this.apiUrl}/admin/unarchive`, { equipmentIds }, { withCredentials: true });
+  }
+
+  getArchivedEquipment() {
+    return this.http.get<any[]>(`${this.apiUrl}/admin/archived`, { withCredentials: true });
+  }
 }
