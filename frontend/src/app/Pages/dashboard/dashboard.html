@@ -62,7 +62,6 @@
           <td mat-cell *matCellDef="let element">
             <mat-checkbox
               [checked]="selectedIds.has(element.id)"
-              [disabled]="element.returned"
               (change)="toggleRow(element, $event.checked)">
             </mat-checkbox>
           </td>
@@ -173,14 +172,14 @@
           <th mat-header-cell *matHeaderCellDef> Actions </th>
           <td mat-cell *matCellDef="let element">
             <div class="action-buttons">
-              <button mat-mini-button color="primary" (click)="releaseEntry(element)" [disabled]="element.released">
-                Release
+              <button mat-icon-button matTooltip="Release" color="primary" aria-label="Release" (click)="releaseEntry(element)" [disabled]="element.released">
+                <mat-icon>ios_share</mat-icon>
               </button>
-              <button mat-mini-button color="accent" (click)="returnEntry(element)" [disabled]="!element.released || element.returned">
-                Return
+              <button mat-icon-button matTooltip="Return" color="accent" aria-label="Return" (click)="returnEntry(element)" [disabled]="!element.released || element.returned">
+                <mat-icon>assignment_returned</mat-icon>
               </button>
-              <button mat-mini-button color="warn" (click)="deleteEntry(element)">
-                Delete
+              <button mat-icon-button matTooltip="Delete" color="warn" aria-label="Delete" (click)="deleteEntry(element)">
+                <mat-icon>delete</mat-icon>
               </button>
             </div>
           </td>

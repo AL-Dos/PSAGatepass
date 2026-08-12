@@ -4,8 +4,46 @@
 </div>
 
 <div class="table-container">
+  <div class="controls-bar">
+    <div class="search-bar">
+      <mat-form-field appearance="outline">
+        <mat-label>Search</mat-label>
+        <input matInput placeholder="Search archived records..." (keyup)="applyFilter($event)">
+        <mat-icon matSuffix>search</mat-icon>
+      </mat-form-field>
+    </div>
+
+    <div class="actions-bar">
+      <button mat-raised-button color="accent"
+              (click)="unarchiveSelected()"
+              [disabled]="getSelectedCount() === 0">
+        Unarchive Selected
+      </button>
+      <button mat-raised-button color="primary"
+              (click)="gotoDashboard()">
+        View Dashboard
+      </button>
+    </div>
+  </div>
+
   <div class="table-scroll">
     <table mat-table [dataSource]="dataSource" matSort>
+      <ng-container matColumnDef="select">
+        <th mat-header-cell *matHeaderCellDef>
+          <mat-checkbox
+            [checked]="isAllSelected()"
+            [indeterminate]="isSomeSelected()"
+            (change)="toggleAll($event.checked)">
+          </mat-checkbox>
+        </th>
+        <td mat-cell *matCellDef="let element">
+          <mat-checkbox
+            [checked]="selectedIds.has(element.id)"
+            (change)="toggleRow(element, $event.checked)">
+          </mat-checkbox>
+        </td>
+      </ng-container>
+
       <ng-container matColumnDef="id">
         <th mat-header-cell *matHeaderCellDef mat-sort-header="id"> ID </th>
         <td mat-cell *matCellDef="let element"> <span class="id-badge">{{ element.id }}</span> </td>
@@ -58,6 +96,20 @@
             <mat-icon>{{ element.returned ? 'check_circle' : 'radio_button_unchecked' }}</mat-icon>
             {{ element.returned ? 'Returned' : 'Out' }}
           </span>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef> Actions </th>
+        <td mat-cell *matCellDef="let element">
+          <div class="action-buttons">
+            <button mat-icon-button matTooltip="Unarchive" color="primary" aria-label="Unarchive" (click)="unarchiveEntry(element)">
+              <mat-icon>unarchive</mat-icon>
+            </button>
+            <button mat-icon-button matTooltip="Delete" color="warn" aria-label="Delete" (click)="deleteEntry(element)">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </div>
         </td>
       </ng-container>
 

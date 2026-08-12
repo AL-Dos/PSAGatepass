@@ -159,11 +159,27 @@ public class GatepassController {
     @GetMapping("/admin/archived")
     public ResponseEntity<List<RequestorEquipmentViewDTO>> getArchivedRequestors() {
         List<RequestorEquipmentViewDTO> archived = requestorRepo.findAll().stream()
-                .filter(r -> r.getEquipment() != null && r.getEquipment().stream().anyMatch(e -> e.getGatepass() != null && e.getGatepass().isArchived()))
-                .map(this::toRequestorEquipmentView)
+                .map(this::toArchivedRequestorEquipmentView)
+                .filter(dto -> dto.getEquipment() != null && !dto.getEquipment().isEmpty())
                 .collect(Collectors.toList());
 
         return ResponseEntity.ok(archived);
+    }
+
+    private RequestorEquipmentViewDTO toArchivedRequestorEquipmentView(Requestors requestor) {
+        RequestorEquipmentViewDTO dto = new RequestorEquipmentViewDTO();
+        dto.setId(requestor.getId());
+        dto.setName(requestor.getName());
+        dto.setDestination(requestor.getDestination());
+        dto.setPeriod(requestor.getPeriod());
+
+        List<EquipmentDTO> equipment = requestor.getEquipment() == null ? List.of()
+                : requestor.getEquipment().stream()
+                        .filter(item -> item.getGatepass() != null && item.getGatepass().isArchived())
+                        .map(this::toEquipmentDto)
+                        .collect(Collectors.toList());
+        dto.setEquipment(equipment);
+        return dto;
     }
 
     @GetMapping("/verify/{token}")
@@ -247,6 +263,7 @@ public class GatepassController {
 
         List<EquipmentDTO> equipment = requestor.getEquipment() == null ? List.of()
                 : requestor.getEquipment().stream()
+                        .filter(item -> item.getGatepass() == null || !item.getGatepass().isArchived())
                         .map(this::toEquipmentDto)
                         .collect(Collectors.toList());
         dto.setEquipment(equipment);
@@ -264,6 +281,7 @@ public class GatepassController {
         if (gatepass != null) {
             dto.setReleased(gatepass.isReleased());
             dto.setReturned(gatepass.isReturned());
+            dto.setArchived(gatepass.isArchived());
             dto.setReleasedAt(toDisplayTime(gatepass.getReleasedAt()));
             dto.setReturnedAt(toDisplayTime(gatepass.getReturnedAt()));
         }

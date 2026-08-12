@@ -21,6 +21,7 @@ public class EquipmentDTO {
 
     private boolean released;
     private boolean returned;
+    private boolean archived;
     private OffsetDateTime releasedAt;
     private OffsetDateTime returnedAt;
 }

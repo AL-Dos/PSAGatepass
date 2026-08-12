@@ -7,6 +7,7 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatPaginatorModule, MatPaginator } from '@angular/material/paginator';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatSortModule, MatSort } from '@angular/material/sort';
@@ -21,6 +22,7 @@ export const DASHBOARD_TABLE_COLUMNS = [
   MatSortModule,
   MatPaginatorModule,
   MatButtonModule,
+  MatTooltipModule,
   MatCheckboxModule,
   MatIconModule,
   MatInputModule,
@@ -200,7 +202,6 @@ export class Dashboard implements OnInit {
   }
 
   toggleRow(row: EquipmentData, checked: boolean): void {
-    if (row.returned) return;
     if (checked) {
       const currentRequestorId = this.getSingleSelectedRequestorId();
       if (currentRequestorId !== null && row.requestorId !== currentRequestorId) {
@@ -217,7 +218,7 @@ export class Dashboard implements OnInit {
     const rows = this.dataSource.filteredData && this.dataSource.filteredData.length > 0
       ? this.dataSource.filteredData
       : this.dataSource.data;
-    return rows.filter(row => !row.returned);
+    return rows;
   }
 
   private getSelectedRequestorIdSet(): Set<number> {
@@ -255,8 +256,9 @@ export class Dashboard implements OnInit {
     }
     this.equipmentService.archiveEquipment(ids).subscribe({
       next: () => {
+        this.dataSource.data = this.dataSource.data.filter(row => !ids.includes(row.id));
+        this.selectedIds.clear();
         this.snackBar.open('Selected gatepass entries archived', 'Close', { duration: 3000 });
-        this.loadEquipment();
       },
       error: (err) => {
         console.error('Error archiving entries:', err);
