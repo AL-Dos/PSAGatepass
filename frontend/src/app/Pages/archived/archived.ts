@@ -117,24 +117,6 @@ export class Archived implements OnInit {
     this.router.navigate(['/dashboard']);
   }
 
-  unarchiveSelected() {
-    if (this.selectedIds.size === 0) {
-      return;
-    }
-
-    this.equipmentService.unarchiveEquipment(Array.from(this.selectedIds)).subscribe({
-      next: () => {
-        this.snackBar.open('Selected items unarchived', 'Close', { duration: 4000 });
-        this.selectedIds.clear();
-        this.loadArchivedEquipment();
-      },
-      error: (err) => {
-        console.error('Error unarchiving items:', err);
-        this.snackBar.open('Unable to unarchive selected records', 'Close', { duration: 5000 });
-      }
-    });
-  }
-
   unarchiveEntry(element: ArchivedEquipmentData) {
     this.equipmentService.unarchiveEquipment([element.id]).subscribe({
       next: () => {
