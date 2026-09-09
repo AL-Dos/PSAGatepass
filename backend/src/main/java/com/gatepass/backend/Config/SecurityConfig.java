@@ -56,12 +56,11 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/verify/**").permitAll()
-                        .requestMatchers("/actuator/health", "/actuator/info", "/api/submit", "/api/login", "/api/me",
-                            "/api/guard/login")
+                        .requestMatchers("/actuator/health", "/actuator/info", "/api/submit", "/api/login", "/api/me")
                         .permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/verify/**").hasAnyRole("GUARD", "ADMIN")
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
-                        .requestMatchers("/api/guard/scan").hasRole("GUARD")
+                        .requestMatchers(HttpMethod.POST, "/api/guard/scan").permitAll()
                         .requestMatchers("/api/list/**").hasRole("ADMIN")
                         .requestMatchers("/api/logout").authenticated()
                         .anyRequest().authenticated())

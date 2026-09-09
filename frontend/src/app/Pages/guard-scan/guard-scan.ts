@@ -1,9 +1,6 @@
 import { Component, OnDestroy, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
-import { MatInputModule } from '@angular/material/input';
-import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatCardModule } from '@angular/material/card';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { Html5QrcodeScanner } from 'html5-qrcode';
@@ -14,10 +11,7 @@ import { GuardService } from '../../Services/guard/guard.service';
   standalone: true,
   imports: [
     CommonModule,
-    FormsModule,
     MatButtonModule,
-    MatInputModule,
-    MatFormFieldModule,
     MatCardModule,
     MatSnackBarModule
   ],
@@ -27,7 +21,6 @@ import { GuardService } from '../../Services/guard/guard.service';
 export class GuardScan implements OnInit, OnDestroy {
   scanner: Html5QrcodeScanner | null = null;
   scannedToken = signal<string | null>(null);
-  loginLoading = signal<boolean>(false);
   loading = signal<boolean>(false);
   result = signal<any>(null);
   cameraFacing = signal<'environment' | 'user'>('environment');
@@ -38,10 +31,7 @@ export class GuardScan implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    const token = this.guardService.getToken();
-    if (token) {
-      this.startScanner();
-    }
+    this.startScanner();
   }
 
   startScanner() {
@@ -94,9 +84,9 @@ export class GuardScan implements OnInit, OnDestroy {
     // Extract token if it's a URL or just the token.
     // Backend generates a verification URL like "http://localhost:8080/api/verify/" + gatepass.getQrToken()
     // We need the token part.
-    let token = decodedText;
+    let token = decodedText.trim();
     if (decodedText.includes('/verify/')) {
-        token = decodedText.split('/verify/')[1];
+        token = decodedText.split('/verify/')[1].split(/[?#]/)[0];
     }
 
     this.scannedToken.set(token);
