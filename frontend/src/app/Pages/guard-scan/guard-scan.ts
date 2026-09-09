@@ -27,14 +27,10 @@ import { GuardService } from '../../Services/guard/guard.service';
 export class GuardScan implements OnInit, OnDestroy {
   scanner: Html5QrcodeScanner | null = null;
   scannedToken = signal<string | null>(null);
-  guardName = signal<string>('');
-  guardPin = signal<string>('');
-  isLoggedIn = signal<boolean>(false);
   loginLoading = signal<boolean>(false);
   loading = signal<boolean>(false);
   result = signal<any>(null);
   cameraFacing = signal<'environment' | 'user'>('environment');
-  showPassword = signal<boolean>(false);
 
   constructor(
     private guardService: GuardService,
@@ -44,15 +40,11 @@ export class GuardScan implements OnInit, OnDestroy {
   ngOnInit(): void {
     const token = this.guardService.getToken();
     if (token) {
-      this.isLoggedIn.set(true);
-      this.guardName.set(this.guardService.getName() || '');
       this.startScanner();
     }
   }
 
   startScanner() {
-    if (!this.isLoggedIn()) return;
-    // Timeout to ensure DOM is ready if needed
     setTimeout(() => {
       // Clear existing scanner if present
       if (this.scanner) {
@@ -123,36 +115,6 @@ export class GuardScan implements OnInit, OnDestroy {
     this.startScanner();
   }
 
-  loginGuard() {
-    if (!this.guardName().trim() || !this.guardPin().trim()) return;
-    this.loginLoading.set(true);
-    this.guardService.login(this.guardName().trim(), this.guardPin().trim()).subscribe({
-      next: (res) => {
-        this.loginLoading.set(false);
-        this.guardService.saveSession(this.guardName().trim(), res.token);
-        this.guardPin.set('');
-        this.isLoggedIn.set(true);
-        this.startScanner();
-        this.snackBar.open('Guard authenticated', 'Close', { duration: 3000 });
-      },
-      error: (err) => {
-        this.loginLoading.set(false);
-        const msg = err.error || err.message || 'Login failed';
-        this.snackBar.open(msg, 'Close', { duration: 5000 });
-      }
-    });
-  }
-
-  logoutGuard() {
-    this.guardService.clearSession();
-    this.isLoggedIn.set(false);
-    this.scannedToken.set(null);
-    this.result.set(null);
-    this.guardPin.set('');
-    this.stopScanner();
-    this.snackBar.open('Signed out', 'Close', { duration: 3000 });
-  }
-
   submitScan() {
     if (!this.scannedToken()) return;
 
@@ -168,9 +130,6 @@ export class GuardScan implements OnInit, OnDestroy {
       error: (err) => {
         this.loading.set(false);
         console.error(err);
-        if (err.status === 401 || err.status === 403) {
-          this.logoutGuard();
-        }
         const msg = err.error || err.message || 'Error occurred';
         this.snackBar.open(msg, 'Close', { duration: 5000 });
       }

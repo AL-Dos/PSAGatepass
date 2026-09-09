@@ -7,21 +7,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.server.ResponseStatusException;
 
-import com.gatepass.backend.Data.GuardLoginDTO;
-import com.gatepass.backend.Model.Guard;
-import com.gatepass.backend.Repository.GuardRepository;
+import com.gatepass.backend.Model.Gatepass;
 import com.gatepass.backend.Security.JwtUtil;
 
 import com.gatepass.backend.Repository.GatepassRepository;
@@ -31,50 +25,16 @@ import com.gatepass.backend.Repository.GatepassRepository;
 public class GuardController {
     private static final Logger log = LoggerFactory.getLogger(GuardController.class);
     
-    private final GuardRepository guardRepo;
-    private final PasswordEncoder encoder;
-    private final JwtUtil jwtUtil;
     private final GatepassRepository gatepassRepo;
     private final ZoneId storageZone;
 
     public GuardController(
-            GuardRepository guardRepo,
             PasswordEncoder encoder,
             JwtUtil jwtUtil,
             GatepassRepository gatepassRepo,
             @Value("${app.timezone.storage:UTC}") String storageTimezone) {
-        this.guardRepo = guardRepo;
-        this.encoder = encoder;
-        this.jwtUtil = jwtUtil;
         this.gatepassRepo = gatepassRepo;
         this.storageZone = ZoneId.of(storageTimezone);
-    }
-
-    @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody GuardLoginDTO dto) {
-
-        Guard guard = guardRepo.findByName(dto.getName())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED));
-
-        if (!guard.isActive()) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Inactive guard");
-        }
-
-        if (!encoder.matches(dto.getPin(), guard.getPinHash())) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid PIN");
-        }
-
-        UserDetails guardUser = User.builder()
-                .username(guard.getName())
-                .password("")
-                .roles("GUARD")
-                .build();
-
-        String token = jwtUtil.generateToken(guardUser);
-
-        return ResponseEntity.ok(Map.of(
-                "token", token,
-                "role", "GUARD"));
     }
 
     @PostMapping("/scan")
@@ -84,40 +44,21 @@ public class GuardController {
             return ResponseEntity.badRequest().body("Missing QR Token");
         }
 
-        if (authentication == null || !authentication.isAuthenticated()) {
-            log.warn("Unauthorized scan attempt");
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized");
-        }
-
-        Guard verifiedGuard = guardRepo.findByName(authentication.getName())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED));
-
-        if (!verifiedGuard.isActive()) {
-            log.warn("Scan attempt by inactive guard: {}", verifiedGuard.getName());
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Inactive guard");
-        }
-
-        com.gatepass.backend.Model.Gatepass gatepass = gatepassRepo.findByQrTokenAndArchivedFalse(dto.getQrToken());
-
-        if (gatepass == null) {
-            log.warn("Scan attempt with invalid QR token by guard: {}", verifiedGuard.getName());
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Invalid QR Code");
-        }
-
+        Gatepass gatepass = gatepassRepo.findByQrTokenAndArchivedFalse(dto.getQrToken());
         String action = "";
 
         if (!gatepass.isReleased()) {
             gatepass.setReleased(true);
             gatepass.setReleasedAt(OffsetDateTime.now(storageZone));
             action = "Released";
-            log.info("Gatepass released by guard: {} for requestor: {}", verifiedGuard.getName(), gatepass.getRequestor().getName());
+            log.info("Gatepass released by guard: {} for requestor: {}", gatepass.getRequestor().getName());
         } else if (!gatepass.isReturned()) {
             gatepass.setReturned(true);
             gatepass.setReturnedAt(OffsetDateTime.now(storageZone));
             action = "Returned";
-            log.info("Gatepass returned by guard: {} for requestor: {}", verifiedGuard.getName(), gatepass.getRequestor().getName());
+            log.info("Gatepass returned by guard: {} for requestor: {}", gatepass.getRequestor().getName());
         } else {
-            log.warn("Scan attempt on completed gatepass by guard: {}", verifiedGuard.getName());
+            log.warn("Scan attempt on completed gatepass by guard: {}", gatepass.getRequestor().getName());
             return ResponseEntity.badRequest().body("Gatepass already completed (Returned)");
         }
 
@@ -125,7 +66,6 @@ public class GuardController {
 
         return ResponseEntity.ok(Map.of(
                 "message", "Success: Items " + action,
-                "guard", verifiedGuard.getName(),
                 "action", action,
                 "gatepass", gatepass));
     }
