@@ -124,6 +124,11 @@ export class Dashboard implements OnInit {
           }
         });
 
+        // Newer form submissions have higher requestor IDs; keep them at the top.
+        equipmentData.sort((a, b) =>
+          b.requestorId - a.requestorId || b.id - a.id
+        );
+
         this.dataSource.data = equipmentData;
         this.dataSource.sort = this.sort;
         this.dataSource.paginator = this.paginator;
