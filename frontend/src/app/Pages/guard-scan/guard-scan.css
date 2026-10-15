@@ -1,147 +1,68 @@
-/* ===================================
-   GATEPASS GUARD SCANNER - IMPROVED
-   =================================== */
+:host {
+  display: block;
+}
 
 .scan-container {
+  padding: 40px 20px;
   display: flex;
   justify-content: center;
-  align-items: center;
-  padding: 20px;
-  min-height: 100vh;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
 }
 
 .scan-card {
-  width: 100%;
-  max-width: 480px;
-  display: flex;
-  flex-direction: column;
-  border-radius: 20px;
-  overflow: hidden;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  width: min(560px, 100%);
+  background: var(--surface);
+  border: 1px solid #ffffffb3;
+  border-radius: 28px;
+  box-shadow: var(--raised);
+  padding: 12px;
 }
-
-/* ===================================
-   HEADER / APP BAR
-   =================================== */
 
 .app-bar {
-  background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
-  color: white;
-  padding: 24px 24px 20px 24px;
+  padding: 20px 16px 24px;
 }
 
-.title-wrap .app-title {
-  font-size: 22px;
+.app-title {
+  font-size: 26px;
   font-weight: 700;
-  letter-spacing: -0.02em;
-  margin-bottom: 4px;
+  letter-spacing: -0.03em;
+  color: var(--ink);
+  margin-bottom: 8px;
 }
 
-.title-wrap .subtitle {
+.subtitle {
+  color: var(--muted);
   font-size: 13px;
-  opacity: 0.75;
-  font-weight: 400;
-}
-
-/* ===================================
-   CAMERA READER SECTION
-   =================================== */
-
-.mat-card-content {
-  padding: 24px !important;
-  background: #ffffff;
+  line-height: 1.6;
 }
 
 .reader-wrap {
   position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: #f8fafc;
-  border-radius: 16px;
-  padding: 16px;
+  border-radius: 20px;
+  padding: 12px;
+  background: var(--surface);
+  box-shadow: var(--inset);
   margin-bottom: 24px;
-  min-height: 420px;
+  min-width: 0;
 }
 
 #reader {
   width: 100%;
-  height: 400px;
-  background: #000;
-  border-radius: 12px;
+  min-height: 300px;
   overflow: hidden;
-  box-shadow: none !important; /* Remove that pesky shadow */
+  border-radius: 14px;
+  color: var(--ink);
 }
 
-/* ===================================
-   CAMERA CONTROLS
-   =================================== */
-
 .controls {
-  position: absolute;
-  right: 28px;
-  bottom: 28px;
   display: flex;
-  gap: 12px;
-  align-items: center;
-  z-index: 10;
+  justify-content: flex-end;
+  padding-top: 12px;
 }
 
 .cam-toggle {
-  background: rgba(15, 23, 42, 0.85) !important;
-  backdrop-filter: blur(8px);
-  color: white !important;
-  border-radius: 12px !important;
-  width: 52px !important;
-  height: 52px !important;
-  border: 2px solid rgba(255, 255, 255, 0.15);
-  transition: all 0.2s ease;
-}
-
-.cam-toggle:hover {
-  background: rgba(15, 23, 42, 0.95) !important;
-  border-color: rgba(255, 255, 255, 0.3);
-  transform: scale(1.05);
-}
-
-.cam-toggle:active {
-  transform: scale(0.95);
-}
-
-.scan-btn {
-  width: 68px;
-  height: 68px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: rgba(15, 23, 42, 0.85);
-  backdrop-filter: blur(8px);
-  border-radius: 50%;
-  border: 3px solid rgba(255, 255, 255, 0.2);
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.scan-btn:hover {
-  transform: scale(1.05);
-  border-color: rgba(255, 255, 255, 0.4);
-}
-
-.scan-btn .dot {
-  width: 36px;
-  height: 36px;
-  background: radial-gradient(circle at 35% 35%, #ffffff, #e2e8f0);
-  border-radius: 50%;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-}
-
-/* ===================================
-   INFO PANEL & FORMS
-   =================================== */
-
-.info-panel {
-  padding: 0;
+  background: var(--surface);
+  box-shadow: var(--raised-sm);
+  border-radius: 12px;
 }
 
 .pin-form {
@@ -150,173 +71,59 @@
 
 .pin-form h3 {
   font-size: 18px;
-  font-weight: 600;
-  color: #1e293b;
-  margin: 0 0 12px 0;
 }
 
 .pin-form p {
-  color: #64748b;
+  color: var(--muted);
   font-size: 14px;
-  margin: 0 0 16px 0;
+  line-height: 1.6;
 }
 
 .token-display {
-  font-family: 'JetBrains Mono', 'Fira Code', monospace;
-  background: #f1f5f9;
-  color: #334155;
-  padding: 14px 16px;
-  border-radius: 10px;
-  word-break: break-all;
-  font-size: 13px;
-  border: 1px solid #e2e8f0;
-  margin: 12px 0 20px 0;
-  letter-spacing: 0.02em;
-}
-
-.w-100 {
-  width: 100%;
+  padding: 16px;
+  border-radius: 12px;
+  box-shadow: var(--inset);
+  font-family: ui-monospace, Consolas, monospace;
+  overflow-wrap: anywhere;
 }
 
 .actions {
   display: flex;
-  gap: 12px;
+  flex-wrap: wrap;
   justify-content: center;
-  margin-top: 20px;
-}
-
-.guard-session {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
   gap: 12px;
-  background: #f8fafc;
-  border: 1px solid #e2e8f0;
-  border-radius: 12px;
-  padding: 12px 14px;
-  margin-bottom: 16px;
-  font-size: 14px;
-  color: #334155;
+  margin: 24px 0 12px;
 }
-
-/* ===================================
-   RESULT BOX
-   =================================== */
 
 .result-box {
-  padding: 24px;
-  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
-  border-radius: 16px;
+  padding: 24px 16px;
+  border-radius: 18px;
+  background: var(--surface-high);
+  border: 1px solid var(--line);
   margin-bottom: 16px;
-  border: 1px solid #e2e8f0;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 }
 
 .result-box h2 {
   font-size: 20px;
-  font-weight: 700;
-  margin: 0 0 12px 0;
-}
-
-.result-box p {
-  color: #475569;
-  font-size: 14px;
-  margin: 0 0 16px 0;
+  margin: 0 0 20px;
 }
 
 .released {
-  color: #16a34a;
+  color: #276347;
 }
 
 .returned {
-  color: #2563eb;
+  color: var(--accent);
 }
-
-/* ===================================
-   MATERIAL FORM FIELD CUSTOMIZATION
-   =================================== */
-
-.mat-mdc-form-field {
-  margin-bottom: 8px;
-}
-
-/* ===================================
-   RESPONSIVE ADJUSTMENTS
-   =================================== */
 
 @media (max-width: 600px) {
   .scan-container {
-    padding: 12px;
+    padding: 28px 20px;
   }
-
   .scan-card {
-    max-width: 100%;
+    padding: 4px;
   }
-
-  .app-bar {
-    padding: 20px 20px 16px 20px;
-  }
-
-  .title-wrap .app-title {
-    font-size: 20px;
-  }
-
-  .mat-card-content {
-    padding: 20px !important;
-  }
-
-  .reader-wrap {
-    padding: 12px;
-    min-height: 340px;
-  }
-
   #reader {
-    height: 320px;
-  }
-
-  .controls {
-    right: 20px;
-    bottom: 20px;
-  }
-
-  .cam-toggle {
-    width: 48px !important;
-    height: 48px !important;
-  }
-
-  .scan-btn {
-    width: 60px;
-    height: 60px;
-  }
-
-  .scan-btn .dot {
-    width: 32px;
-    height: 32px;
-  }
-}
-
-@media (max-width: 400px) {
-  .reader-wrap {
-    min-height: 280px;
-  }
-
-  #reader {
-    height: 260px;
-  }
-
-  .controls {
-    right: 16px;
-    bottom: 16px;
-    gap: 8px;
-  }
-
-  .cam-toggle {
-    width: 44px !important;
-    height: 44px !important;
-  }
-
-  .scan-btn {
-    width: 56px;
-    height: 56px;
+    min-height: 240px;
   }
 }

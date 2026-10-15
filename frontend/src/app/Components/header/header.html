@@ -1,8 +1,13 @@
 <header>
   <div class="box">
-    <nav class="title">E-GATEPASS Tracking System</nav>
+    <span class="brand-mark" aria-hidden="true">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M4 20V4h10v16M2 20h14M8 8h2m-2 4h2m-2 4h2m7-8 4 4-4 4m-3-4h7"/>
+      </svg>
+    </span>
+    <div class="title">E-GATEPASS<span class="brand-caption">Equipment tracking system</span></div>
   </div>
   @if (isDashboard) {
-    <button mat-raised-button color="warn" (click)="logout()" class="logout-btn">Logout</button>
+    <button mat-raised-button (click)="logout()" class="logout-btn">Log out</button>
   }
 </header>

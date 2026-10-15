@@ -10,10 +10,10 @@ html {
   height: 100%;
   @include mat.theme((
     color: (
-      primary: mat.$cyan-palette,
-      tertiary: mat.$orange-palette,
+      primary: mat.$blue-palette,
+      tertiary: mat.$violet-palette,
     ),
-    typography: Roboto,
+    typography: 'Segoe UI',
     density: 0,
   ));
 }

@@ -1,8 +1,40 @@
+/* Shared neumorphic surfaces and accessible interaction states. */
+:root {
+  --surface: #e9edf3;
+  --surface-high: #f4f6fa;
+  --ink: #24334b;
+  --muted: #5e6d83;
+  --accent: #345bc7;
+  --line: #ccd5e1;
+  --raised: 9px 9px 22px #cbd2dd, -9px -9px 22px #ffffff;
+  --raised-sm: 4px 4px 10px #cbd2dd, -4px -4px 10px #ffffff;
+  --inset: inset 4px 4px 9px #d0d7e2, inset -4px -4px 9px #ffffff;
+  --mat-sys-primary: #345bc7;
+  --mat-sys-on-primary: #ffffff;
+  --mat-sys-surface: #e9edf3;
+  --mat-sys-on-surface: #24334b;
+  --mat-sys-on-surface-variant: #5e6d83;
+  --mat-sys-outline: #8190a6;
+  --mat-sys-outline-variant: #ccd5e1;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  min-height: 100%;
+  background: var(--surface);
+}
+
 body {
-  background-color: rgb(10, 10, 50);
-  background-attachment: fixed;
+  margin: 0;
+  min-height: 100vh;
+  height: auto;
+  background: var(--surface);
+  color: var(--ink);
+  font-family: 'Segoe UI', Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
 }
 
 app-root {
@@ -11,158 +43,145 @@ app-root {
   flex-direction: column;
 }
 
-* {
-  box-sizing: border-box;
-}
-
 main {
   flex: 1;
+  width: 100%;
+  min-width: 0;
 }
 
-/* Smooth scrolling */
-html {
-  scroll-behavior: smooth;
+h1, h2, h3, p {
+  overflow-wrap: break-word;
 }
 
-/* Selection styling */
+h1, h2, h3 {
+  color: var(--ink);
+  letter-spacing: -0.035em;
+}
+
+button, input, select {
+  font: inherit;
+}
+
+a {
+  color: var(--accent);
+}
+
 ::selection {
-  background: #667eea;
+  background: #cbd9ff;
+  color: #183372;
+}
+
+:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 4px;
+}
+
+.mat-mdc-form-field {
+  width: 100%;
+}
+
+.mat-mdc-form-field .mat-mdc-text-field-wrapper {
+  background: var(--surface);
+  border-radius: 13px;
+  box-shadow: var(--inset);
+}
+
+.mat-mdc-form-field .mdc-text-field--filled {
+  --mdc-filled-text-field-container-color: transparent;
+}
+
+.mat-mdc-form-field .mdc-line-ripple {
+  display: none;
+}
+
+.mat-mdc-form-field .mdc-notched-outline {
+  opacity: 0.6;
+}
+
+.mat-mdc-form-field.mat-focused .mat-mdc-text-field-wrapper {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.mat-mdc-form-field-icon-suffix {
+  color: var(--muted);
+}
+
+button.mat-mdc-raised-button, button.mat-mdc-outlined-button {
+  border-radius: 12px;
+  min-height: 44px;
+  height: auto;
+  padding: 10px 18px;
+  box-shadow: var(--raised-sm);
+  background: var(--surface);
+  color: var(--ink);
+  border: 1px solid #ffffffa6;
+  transition: box-shadow 160ms ease, background 160ms ease;
+}
+
+button.mat-mdc-raised-button[color="primary"] {
+  background: var(--accent);
   color: white;
+  border-color: transparent;
+  box-shadow: 4px 4px 10px #bdc7dc, -4px -4px 10px #fff;
 }
 
-::-moz-selection {
-  background: #667eea;
-  color: white;
+button.mat-mdc-raised-button[color="warn"] {
+  color: #a32936;
 }
 
-/*----- Paginator Override -----*/
-.mat-mdc-paginator,
-.mat-mdc-paginator .mat-mdc-select-value,
-.mat-mdc-paginator .mat-mdc-select-arrow,
-.mat-mdc-paginator-range-label,
-.mat-mdc-paginator-page-size-label {
-  font-family: 'DM Sans', sans-serif;
-  background-color: transparent !important;
-  color: rgba(255, 255, 255, 0.9) !important;
-  border: none !important;
-  box-shadow: none !important;
+button.mat-mdc-raised-button:disabled, button.mat-mdc-outlined-button:disabled {
+  background: #e0e5ed;
+  color: #6c788b;
+  box-shadow: none;
+  border-color: #d3dae4;
 }
 
-/* 1. Dropdown text */
-.mat-mdc-paginator .mdc-list-item__primary-text {
-  color: rgb(0, 0, 0) !important;
+button.mat-mdc-raised-button:not(:disabled):active, button.mat-mdc-outlined-button:not(:disabled):active {
+  box-shadow: var(--inset);
 }
 
-.mat-mdc-paginator .mat-mdc-select-min-line {
-  color: rgb(253, 253, 253) !important;
+button.mat-mdc-icon-button {
+  color: var(--accent);
 }
 
-/* 2. Active Arrows */
-.mat-mdc-paginator .mat-mdc-icon-button svg,
-.mat-mdc-paginator .mat-mdc-icon-button mat-icon {
-  color: rgba(0, 0, 0, 0.959) !important;
-  fill: rgba(255, 255, 255, 0.726) !important;
+button.mat-mdc-icon-button[color="warn"] {
+  color: #b33443;
 }
 
-/* 3. Inactive Arrows */
-.mat-mdc-paginator .mat-mdc-icon-button[disabled] svg,
-.mat-mdc-paginator .mat-mdc-icon-button[disabled] mat-icon {
-  color: rgb(0, 0, 0) !important;
-  fill: rgb(245, 245, 245) !important;
+button.mat-mdc-icon-button:disabled {
+  color: #8c97a8;
 }
 
-/* 4. Hovered Arrows */
-.mat-mdc-paginator .mat-mdc-icon-button .mat-ripple-element
-.mat-mdc-paginator .mat-mdc-icon-button:hover{
-  background: rgb(0, 0, 0) !important;
+.mat-mdc-paginator {
+  background: transparent;
+  color: var(--muted);
 }
 
-.mat-mdc-paginator .mat-mdc-icon-button .mat-ripple-element {
-  background: rgb(230, 230, 230) !important;
+.mat-mdc-menu-panel, .mat-mdc-select-panel {
+  background: var(--surface-high) !important;
+  border: 1px solid var(--line);
+  border-radius: 14px !important;
 }
 
-/* 5. Page Size Select Box Outline */
-.mat-mdc-paginator .mdc-notched-outline__leading,
-.mat-mdc-paginator .mdc-notched-outline__notch,
-.mat-mdc-paginator .mdc-notched-outline__trailing {
-  border-color: rgba(255, 255, 255, 0.603) !important;
+.mat-mdc-dialog-surface {
+  background: var(--surface) !important;
+  border-radius: 24px !important;
 }
 
-/*-----Search Bar Override -----*/
-/* 1.Floating label "Search" text */
-.search-bar .mat-mdc-floating-label,
-.search-bar .mdc-floating-label
-.search-bar mat-icon,
-.search-bar .mat-mdc-form-field mat-icon{
-  color: rgba(255, 255, 255, 0.897) !important;
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
 }
 
-/* 2. Outline border */
-.search-bar .mdc-notched-outline__leading,
-.search-bar .mdc-notched-outline__notch,
-.search-bar .mdc-notched-outline__trailing {
-  border-color: rgba(255, 255, 255, 0.2) !important;
-}
-
-/* 3. Outline border on hover */
-.search-bar:hover .mdc-notched-outline__leading,
-.search-bar:hover .mdc-notched-outline__notch,
-.search-bar:hover .mdc-notched-outline__trailing {
-  border-color: rgba(255, 255, 255, 0.45) !important;
-}
-
-/* 4. Outline border on focus */
-.search-bar .mat-mdc-form-field.mat-focused .mdc-notched-outline__leading,
-.search-bar .mat-mdc-form-field.mat-focused .mdc-notched-outline__notch,
-.search-bar .mat-mdc-form-field.mat-focused .mdc-notched-outline__trailing {
-  border-color: #667eea !important;
-}
-
-/* 5.Search bar background — darker so white text is visible */
-.search-bar .mat-mdc-text-field-wrapper {
-  background: rgba(255, 255, 255, 0.014) !important;
-}
-
-.search-bar .mat-mdc-text-field-wrapper:focus-within {
-  background: rgba(255, 255, 255, 0.075) !important;
-  box-shadow: 0 0 0 2px var(--accent-glow);
-}
-
-/* 6. Input text & placeholder */
-.search-bar .mat-mdc-input-element {
-  color: rgba(255, 255, 255, 0.9) !important;
-  caret-color: #667eea;
-}
-
-.search-bar .mat-mdc-input-element::placeholder {
-  color: rgba(255, 255, 255, 0.4) !important;
-}
-
-/* ----- Actions Bar -----*/
-.actions-bar {
-  display: flex;
-  gap: 2rem;
-  align-items: middle;
-  margin-top: 0.5rem;
-  font-family: 'DM Sans', sans-serif;
-}
-
-.actions-bar .actions-select,
-.actions-bar .actions-select .mat-mdc-select-value,
-.actions-bar .actions-select .mat-mdc-select-arrow,
-.actions-bar .actions-select .mat-mdc-floating-label {
-  font-family: 'DM Sans', sans-serif;
-  color: rgba(255, 255, 255, 0.9) !important;
-}
-
-.actions-bar .actions-select:hover .mdc-notched-outline__leading,
-.actions-bar .actions-select:hover .mdc-notched-outline__notch,
-.actions-bar .actions-select:hover .mdc-notched-outline__trailing {
-  border-color: rgba(255, 255, 255, 0.75) !important;
-}
-
-.actions-bar .actions-select.mat-focused .mdc-notched-outline__leading,
-.actions-bar .actions-select.mat-focused .mdc-notched-outline__notch,
-.actions-bar .actions-select.mat-focused .mdc-notched-outline__trailing {
-  border-color: #667eea !important;
+@media print {
+  body {
+    background: white;
+  }
+  app-header, app-footer, .controls-bar, .filter-bar, mat-paginator {
+    display: none !important;
+  }
 }

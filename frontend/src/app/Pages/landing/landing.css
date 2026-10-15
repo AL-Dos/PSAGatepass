@@ -1,94 +1,111 @@
 .audit-page-container {
-  display: flex;
-  justify-content: center;
-  padding: 2rem;
+  padding: 36px 40px 48px;
 }
 
 .joined-card-wrap {
-  width: min(1400px, 100%);
+  width: min(1240px, 100%);
+  margin: auto;
 }
 
-.joined-card {
-  width: 100%;
-  background-color: rgba(1, 28, 77);
-  border-radius: 0 0 10px 10px;
-  box-shadow: 0px 15px 24px rgb(0, 0, 0);
-  padding: 1.5rem;
-}
-
-.joined-card-body {
-  display: flex;
-  align-items: stretch;
-  gap: 2rem;
-}
-
-.left-panel,
-.right-panel {
-  display: flex;
-  justify-content: center;
-  flex: 1 1 0;
-}
-
-.left-panel {
-  max-width: 620px;
-}
-
-.right-panel {
-  flex: 2 1 0;
-}
-
-.separator {
-  width: 2px;
-  background-color: #888787;
-  align-self: stretch;
-}
-
-/* Login banner */
 .login-top {
-  width: 100%;
-  background-color: rgba(31, 21, 104, 0.918);
-  border-radius: 18px 18px 0 0;
-  box-shadow: 0px 15px 24px rgb(0, 0, 0);
-  padding: 1rem 1.5rem;
-  box-sizing: border-box;
+  padding: 0 8px 30px;
 }
 
 .login-top-inner {
   display: flex;
-  flex-direction: row;
   align-items: center;
-  gap: 1rem;
+  gap: 18px;
 }
 
 .login-top-logo {
+  width: 76px;
+  height: 76px;
+  border-radius: 24px;
+  box-shadow: var(--raised-sm);
+  display: grid;
+  place-items: center;
   flex-shrink: 0;
 }
 
 .login-top-logo img {
-  width: 60px;
-  height: 60px;
+  width: 56px;
+  height: 56px;
   object-fit: contain;
 }
 
-.login-top-text {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 0.50rem;
-}
-
 .login-top-text p {
-  margin: 0;
-  font-size: clamp(0.75rem, 1.5vw, 1.15rem);
-  color: white;
-  font-weight: 500;
+  color: var(--muted);
+  font-size: 12px;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  margin: 0 0 7px;
 }
 
 .login-top-text h1 {
   margin: 0;
-  font-size: clamp(0.85rem, 1.8vw, 2rem);
-  color: white;
+  font-size: clamp(20px, 2.4vw, 30px);
   font-weight: 700;
-  text-decoration: underline;
-  text-align: left;
+}
+
+.joined-card {
+  background: var(--surface);
+  border: 1px solid #ffffffa6;
+  border-radius: 28px;
+  box-shadow: var(--raised);
+  padding: 36px;
+}
+
+.joined-card-body {
+  display: grid;
+  grid-template-columns: minmax(240px, 0.8fr) 1px minmax(0, 1.7fr);
+  gap: 36px;
+  align-items: start;
+}
+
+.left-panel, .right-panel {
+  min-width: 0;
+}
+
+app-login, app-form {
+  display: block;
+  width: 100%;
+}
+
+.separator {
+  height: 100%;
+  background: var(--line);
+  box-shadow: 1px 0 #fff;
+}
+
+@media (max-width: 900px) {
+  .joined-card-body {
+    grid-template-columns: 1fr;
+    gap: 32px;
+  }
+  .separator {
+    height: 1px;
+    width: 100%;
+  }
+}
+
+@media (max-width: 600px) {
+  .audit-page-container {
+    padding: 28px 20px;
+  }
+  .joined-card {
+    padding: 24px 18px;
+    border-radius: 22px;
+  }
+  .login-top {
+    padding-bottom: 24px;
+  }
+  .login-top-logo {
+    width: 60px;
+    height: 60px;
+    border-radius: 18px;
+  }
+  .login-top-logo img {
+    width: 44px;
+    height: 44px;
+  }
 }

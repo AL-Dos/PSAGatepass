@@ -1,8 +1,8 @@
-<div></div>
 <div class="request-form">
   <div class="section">
     <div class="section-header">
-      <h2>Requestor Form</h2>
+      <h2>Create a gatepass</h2>
+      <p>Enter your details and the equipment you need to take out.</p>
     </div>
 
     <div class="section-content scrollable-content">
@@ -64,7 +64,7 @@
           <mat-icon matSuffix>calendar_today</mat-icon>
         </mat-form-field>
 
-        <h3 style="margin-top: 20px;">Equipment List</h3>
+        <h3>Equipment details</h3>
 
         <!-- EQUIPMENT REPEATING ROWS -->
         @for (item of model.equipmentItems; let i = $index; track i) {
@@ -125,7 +125,7 @@
         </button>
 
         <div class="button-group">
-          <button mat-raised-button color="primary" type="button" (click)="submitForm(form)">Save</button>
+          <button mat-raised-button color="primary" type="button" (click)="submitForm(form)">Submit request</button>
           <button mat-stroked-button color="accent" type="reset" (click)="resetForm(form)">Clear</button>
         </div>
 

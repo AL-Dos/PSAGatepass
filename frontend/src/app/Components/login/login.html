@@ -2,7 +2,8 @@
   <div class="login-left">
       <div class="section">
           <div class="section-header">
-              <h2>Login Admin</h2>
+              <h2>Welcome back</h2>
+              <p>Sign in to manage gatepasses and equipment activity.</p>
           </div>
           <div class="section-content">
               <form #loginForm="ngForm" (ngSubmit)="login()">
@@ -11,6 +12,7 @@
                       <input
                         matInput
                         name="name"
+                        autocomplete="username"
                         [(ngModel)]="user.name"
                         required>
                       <mat-icon matSuffix>person</mat-icon>
@@ -20,6 +22,7 @@
                       <input
                         matInput
                         name="password"
+                        autocomplete="current-password"
                         [type]="showPassword ? 'text' : 'password'"
                         [(ngModel)]="user.password"
                         required>
@@ -36,7 +39,7 @@
                       Invalid name or password. Please try again.
                     </mat-error>
                   }
-                  <button mat-raised-button color="primary" type="submit">Login</button>
+                  <button mat-raised-button color="primary" type="submit" [disabled]="loading">{{ loading ? 'Signing in...' : 'Sign in' }}</button>
               </form>
           </div>
       </div>
