@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatNativeDateModule } from '@angular/material/core';
@@ -7,6 +7,8 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
+import { MatMenuModule } from '@angular/material/menu';
+import { finalize } from 'rxjs';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatPaginatorModule, MatPaginator } from '@angular/material/paginator';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
@@ -28,7 +30,8 @@ export const DASHBOARD_TABLE_COLUMNS = [
   MatInputModule,
   MatDatepickerModule,
   MatNativeDateModule,
-  MatSnackBarModule
+  MatSnackBarModule,
+  MatMenuModule
 ] as const;
 
 interface EquipmentData {
@@ -46,6 +49,8 @@ interface EquipmentData {
   returnedAt: Date | null;
 }
 
+type StatusFilter = 'all' | 'pending' | 'not-returned' | 'released' | 'returned';
+
 @Component({
   selector: 'app-dashboard',
   standalone: true,
@@ -53,11 +58,26 @@ interface EquipmentData {
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.css',
 })
-export class Dashboard implements OnInit {
+export class Dashboard implements OnInit, AfterViewInit {
   dataSource = new MatTableDataSource<EquipmentData>();
   displayedColumns: string[] = ['select', 'id', 'equip', 'quan', 'pNum', 'dest', 'pCover', 'req', 'released', 'returned', 'actions'];
   isExporting = false;
   selectedIds = new Set<number>();
+  searchTerm = '';
+  statusFilter: StatusFilter = 'all';
+  readonly statusOptions: { value: StatusFilter; label: string }[] = [
+    { value: 'all', label: 'All statuses' },
+    { value: 'pending', label: 'Pending release' },
+    { value: 'not-returned', label: 'Not returned (still out)' },
+    { value: 'released', label: 'Released' },
+    { value: 'returned', label: 'Returned' }
+  ];
+  actionInProgress = false;
+  actionNotification: { message: string; error: boolean } | null = null;
+
+  get statusFilterLabel(): string {
+    return this.statusOptions.find(option => option.value === this.statusFilter)!.label;
+  }
 
   @ViewChild(MatSort) sort!: MatSort;
   @ViewChild(MatPaginator) paginator!: MatPaginator;
@@ -69,6 +89,17 @@ export class Dashboard implements OnInit {
   ) {}
 
   ngOnInit() {
+    this.dataSource.filterPredicate = (item, filter) => {
+      const { search, status } = JSON.parse(filter) as { search: string; status: StatusFilter };
+      const matchesStatus = status === 'all'
+        || (status === 'pending' && !item.released)
+        || (status === 'not-returned' && item.released && !item.returned)
+        || (status === 'released' && item.released)
+        || (status === 'returned' && item.returned);
+      const searchableText = [item.id, item.equipmentName, item.quantity, item.equipmentCode,
+        item.requestorName, item.destination, item.period].join(' ').toLowerCase();
+      return matchesStatus && searchableText.includes(search);
+    };
     this.loadEquipment();
 
     this.dataSource.sortingDataAccessor = (item, property) => {
@@ -95,6 +126,11 @@ export class Dashboard implements OnInit {
           return '';
       }
     };
+  }
+
+  ngAfterViewInit(): void {
+    this.dataSource.sort = this.sort;
+    this.dataSource.paginator = this.paginator;
   }
 
   loadEquipment() {
@@ -130,8 +166,6 @@ export class Dashboard implements OnInit {
         );
 
         this.dataSource.data = equipmentData;
-        this.dataSource.sort = this.sort;
-        this.dataSource.paginator = this.paginator;
         this.selectedIds.clear();
       },
       error: (err) => {
@@ -141,8 +175,30 @@ export class Dashboard implements OnInit {
   }
 
   applyFilter(event: Event) {
-    const filterValue = (event.target as HTMLInputElement).value;
-    this.dataSource.filter = filterValue.trim().toLowerCase();
+    this.searchTerm = (event.target as HTMLInputElement).value;
+    this.updateFilters();
+  }
+
+  setStatusFilter(status: StatusFilter): void {
+    this.statusFilter = status;
+    this.updateFilters();
+  }
+
+  clearFilters(): void {
+    this.searchTerm = '';
+    this.statusFilter = 'all';
+    this.updateFilters();
+  }
+
+  private updateFilters(): void {
+    this.dataSource.filter = JSON.stringify({
+      search: this.searchTerm.trim().toLowerCase(), status: this.statusFilter
+    });
+    // Hidden rows must not remain selected for export or archive.
+    const visibleIds = new Set(this.dataSource.filteredData.map(row => row.id));
+    this.selectedIds.forEach(id => {
+      if (!visibleIds.has(id)) this.selectedIds.delete(id);
+    });
 
     if (this.dataSource.paginator) {
       this.dataSource.paginator.firstPage();
@@ -220,10 +276,7 @@ export class Dashboard implements OnInit {
   }
 
   private getSelectableRows(): EquipmentData[] {
-    const rows = this.dataSource.filteredData && this.dataSource.filteredData.length > 0
-      ? this.dataSource.filteredData
-      : this.dataSource.data;
-    return rows;
+    return this.dataSource.filteredData;
   }
 
   private getSelectedRequestorIdSet(): Set<number> {
@@ -304,31 +357,50 @@ export class Dashboard implements OnInit {
   }
 
   releaseEntry(element: EquipmentData): void {
-    if (element.released) return;
-    this.equipmentService.releaseEquipment([element.id]).subscribe({
+    if (element.released || this.actionInProgress) return;
+    this.actionInProgress = true;
+    this.equipmentService.releaseEquipment([element.id]).pipe(
+      finalize(() => this.actionInProgress = false)
+    ).subscribe({
       next: () => {
-        this.snackBar.open('Entry marked as released', 'Close', { duration: 3000 });
+        this.notifyAction(element, 'released');
         this.loadEquipment();
       },
       error: (err) => {
         console.error('Error releasing entry:', err);
-        this.snackBar.open(err.error || 'Error releasing entry', 'Close', { duration: 5000 });
+        this.notifyActionError(err, 'release');
       }
     });
   }
 
   returnEntry(element: EquipmentData): void {
-    if (!element.released || element.returned) return;
-    this.equipmentService.returnEquipment([element.id]).subscribe({
+    if (!element.released || element.returned || this.actionInProgress) return;
+    this.actionInProgress = true;
+    this.equipmentService.returnEquipment([element.id]).pipe(
+      finalize(() => this.actionInProgress = false)
+    ).subscribe({
       next: () => {
-        this.snackBar.open('Entry marked as returned', 'Close', { duration: 3000 });
+        this.notifyAction(element, 'returned');
         this.loadEquipment();
       },
       error: (err) => {
         console.error('Error returning entry:', err);
-        this.snackBar.open(err.error || 'Error returning entry', 'Close', { duration: 5000 });
+        this.notifyActionError(err, 'return');
       }
     });
+  }
+
+  private notifyAction(element: EquipmentData, action: 'released' | 'returned'): void {
+    const message = `${element.equipmentName} (#${element.id}) for ${element.requestorName} was ${action} successfully.`;
+    this.actionNotification = { message, error: false };
+    this.snackBar.open(message, 'Close', { duration: 5000 });
+  }
+
+  private notifyActionError(err: any, action: 'release' | 'return'): void {
+    const detail = typeof err.error === 'string' ? err.error : err.error?.message;
+    const message = detail || `Unable to ${action} the item. Please try again.`;
+    this.actionNotification = { message, error: true };
+    this.snackBar.open(message, 'Close', { duration: 5000 });
   }
 
   deleteEntry(element: EquipmentData): void {

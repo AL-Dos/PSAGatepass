@@ -5,11 +5,20 @@
   </div>
 
   <div class="table-container">
+    @if (actionNotification; as notification) {
+      <div class="action-notification" [class.notification-error]="notification.error" role="status" aria-live="polite">
+        <mat-icon>{{ notification.error ? 'error_outline' : 'check_circle' }}</mat-icon>
+        <span>{{ notification.message }}</span>
+        <button mat-icon-button aria-label="Dismiss notification" (click)="actionNotification = null">
+          <mat-icon>close</mat-icon>
+        </button>
+      </div>
+    }
     <div class="controls-bar">
       <div class="search-bar">
         <mat-form-field appearance="outline">
           <mat-label>Search</mat-label>
-          <input matInput placeholder="Search records..." (keyup)="applyFilter($event)">
+          <input matInput placeholder="Search records..." [value]="searchTerm" (input)="applyFilter($event)">
           <mat-icon matSuffix>search</mat-icon>
         </mat-form-field>
       </div>
@@ -46,6 +55,26 @@
           View Archived
         </button>
       </div>
+    </div>
+
+    <div class="filter-bar">
+      <button mat-stroked-button [matMenuTriggerFor]="statusMenu" aria-label="Filter gatepasses by status">
+        <mat-icon>filter_list</mat-icon>
+        Filter: {{ statusFilterLabel }}
+        <mat-icon>expand_more</mat-icon>
+      </button>
+      <mat-menu #statusMenu="matMenu">
+        @for (option of statusOptions; track option.value) {
+          <button mat-menu-item (click)="setStatusFilter(option.value)">
+            <mat-icon>{{ statusFilter === option.value ? 'check' : '' }}</mat-icon>
+            <span>{{ option.label }}</span>
+          </button>
+        }
+      </mat-menu>
+      <span class="filter-count" role="status">Showing {{ dataSource.filteredData.length }} of {{ dataSource.data.length }} entries</span>
+      @if (statusFilter !== 'all' || searchTerm) {
+        <button mat-button (click)="clearFilters()">Clear filters</button>
+      }
     </div>
 
     <div class="table-scroll">
@@ -156,7 +185,7 @@
             <div class="status-cell">
               <span class="status-badge" [ngClass]="element.returned ? 'status-returned' : 'status-not-returned'">
                 <mat-icon>{{ element.returned ? 'check_circle' : 'radio_button_unchecked' }}</mat-icon>
-                {{ element.returned ? 'Returned' : 'Out' }}
+                {{ element.returned ? 'Returned' : element.released ? 'Out' : 'Not released' }}
               </span>
               @if (element.returnedAt) {
                 <span class="status-date">
@@ -172,10 +201,10 @@
           <th mat-header-cell *matHeaderCellDef> Actions </th>
           <td mat-cell *matCellDef="let element">
             <div class="action-buttons">
-              <button mat-icon-button matTooltip="Release" color="primary" aria-label="Release" (click)="releaseEntry(element)" [disabled]="element.released">
+              <button mat-icon-button matTooltip="Release" color="primary" aria-label="Release" (click)="releaseEntry(element)" [disabled]="element.released || actionInProgress">
                 <mat-icon>ios_share</mat-icon>
               </button>
-              <button mat-icon-button matTooltip="Return" color="accent" aria-label="Return" (click)="returnEntry(element)" [disabled]="!element.released || element.returned">
+              <button mat-icon-button matTooltip="Return" color="accent" aria-label="Return" (click)="returnEntry(element)" [disabled]="!element.released || element.returned || actionInProgress">
                 <mat-icon>assignment_returned</mat-icon>
               </button>
               <button mat-icon-button matTooltip="Delete" color="warn" aria-label="Delete" (click)="deleteEntry(element)">
@@ -194,13 +223,13 @@
         <tr class="mat-row" *matNoDataRow>
           <td class="mat-cell no-data-cell" [attr.colspan]="displayedColumns.length">
             <mat-icon>inbox</mat-icon>
-            <p>No records found!</p>
+            <p>No records match the current filters.</p>
           </td>
         </tr>
       </table>
     </div>
 
-    <mat-paginator [length]="dataSource.data.length"
+    <mat-paginator [length]="dataSource.filteredData.length"
                    [pageSize]="10"
                    [pageIndex]="0"
                    [pageSizeOptions]="[5, 10, 25, 50, 100]"

@@ -137,6 +137,46 @@
 }
 
 /* Table Scroll */
+.filter-bar {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-bottom: 1.25rem;
+}
+
+.filter-count {
+  color: #e5e7eb;
+  font-size: 0.875rem;
+}
+
+.action-notification {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1.25rem;
+  padding: 0.75rem 1rem;
+  border: 1px solid #26834a;
+  border-radius: 12px;
+  background: #eefbf2;
+  color: #165c32;
+}
+
+.action-notification span {
+  flex: 1;
+  overflow-wrap: anywhere;
+}
+
+.action-notification > mat-icon {
+  flex-shrink: 0;
+}
+
+.action-notification.notification-error {
+  border-color: #b42318;
+  background: #fff1f0;
+  color: #912018;
+}
+
 .table-scroll {
   overflow-x: auto;
   border-radius: 16px;

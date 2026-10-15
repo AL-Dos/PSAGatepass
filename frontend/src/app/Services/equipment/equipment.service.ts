@@ -35,11 +35,11 @@ export class EquipmentService {
   }
 
   releaseEquipment(equipmentIds: number[]) {
-    return this.http.post(`${this.apiUrl}/admin/release`, { equipmentIds }, { withCredentials: true });
+    return this.http.post(`${this.apiUrl}/admin/release`, { equipmentIds }, { withCredentials: true, responseType: 'text' });
   }
 
   returnEquipment(equipmentIds: number[]) {
-    return this.http.post(`${this.apiUrl}/admin/return`, { equipmentIds }, { withCredentials: true });
+    return this.http.post(`${this.apiUrl}/admin/return`, { equipmentIds }, { withCredentials: true, responseType: 'text' });
   }
 
   deleteEquipment(equipmentIds: number[]) {
